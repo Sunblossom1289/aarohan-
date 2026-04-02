@@ -7,10 +7,13 @@ import {
   ArrowRight, Brain, Target, Users, 
   Globe, Award, Zap, BookOpen, Mail, ChevronRight,
   GraduationCap, PenTool, MessageSquare, Send, Check,
-  Map, Library, Sparkles, X, Heart, Menu, Linkedin, Github, Link
+  Map, Library, Sparkles, X, Heart, Menu, Linkedin
 } from 'lucide-react';
 import { API_BASE_URL } from '../../utils/config';
 import { fetchLatestArticles } from '../../utils/articleHelpers';
+
+// 👇 1. Image ko yahan import karo (Apne folder path ke hisaab se '../assets/pizza.jpg' bhi ho sakta hai)
+
 
 // ==================== PERFORMANCE OPTIMIZATIONS ====================
 // Lazy load heavy Spline 3D component - only loads when needed
@@ -410,7 +413,7 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
 
 
 // --- INJECTED GLOBAL STYLES & RESPONSIVE UTILITIES ---
-export const GlobalStyles = memo(() => (
+ export const GlobalStyles = memo(() => (
   <style>{`
     :root {
       /* --- PALETTE DEFINITIONS --- */
@@ -421,7 +424,7 @@ export const GlobalStyles = memo(() => (
       --fresh-sky: #5fa8d3;
 
       /* --- FUNCTIONAL MAPPINGS --- */
-      --color-primary: var(--yale-blue);       
+      --color-primary: var(--yale-blue);      
       --color-primary-light: var(--fresh-sky); 
       --color-accent: var(--pacific-blue);     
       
@@ -1010,7 +1013,7 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
                 animation: 'shimmer 3s ease-in-out infinite',
               }} />
               <BookOpen size={20} strokeWidth={2.5} />
-              <span style={{ position: 'relative', zIndex: 1 }}>Explore Career Encyclopedia</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>Explore 495+ Careers</span>
               <ArrowRight size={18} strokeWidth={2.5} style={{ position: 'relative', zIndex: 1 }} />
             </motion.button>
 
@@ -1367,7 +1370,7 @@ const FeaturesSection = memo(({ onNavigate, shouldReduceAnimations }) => {
       id: 4, 
       title: "Career Library", 
       headline: "The Ultimate Cheat Sheet",
-      copy: "Career paths, zero fluff. Salary trends, \"a day in the life\" videos, and the raw truth about what it’s actually like.",
+      copy: "500+ careers, zero fluff. Salary trends, \"a day in the life\" videos, and the raw truth about what it’s actually like.",
       btn: "Browse the Vault", 
       icon: <Library size={48} strokeWidth={1.5} />, 
       color: "var(--yale-blue)",
@@ -2155,43 +2158,6 @@ const ProgramsSection = memo(({ onNavigate, shouldReduceAnimations }) => {
         { icon: "🧘", text: "High-anxiety management with 'Career Krishna'." }
       ]
     },
-    // --- Daksh, Pragati & Shikhar cards commented out for now ---
-    // {
-    //   title: "Daksh",
-    //   badge: "College & University",
-    //   image: "/img_cards/card6.webp",
-    //   tagline: "Design your degree and control your timeline: build the skills the real world demands!",
-    //   objective: "Ensuring no effort is wasted by picking minors and entry/exit pathways that maximize real-world employability.",
-    //   features: [
-    //     { icon: "🛠️", text: "Employability-focused 'Minor' selection strategy." },
-    //     { icon: "🚪", text: "Navigating Multiple Entry & Exit pathways." },
-    //     { icon: "📈", text: "Strategic upskilling for 'Jobs of the Future'." }
-    //   ]
-    // },
-    // {
-    //   title: "Pragati",
-    //   badge: "Working Professionals",
-    //   image: "/img_cards/card7.jpg",
-    //   tagline: "Evolve your career: map your transferable skills to the high-paying jobs of tomorrow!",
-    //   objective: "Tailored for mid-career pivots, reverse-engineering historical data to map to emerging industry demands.",
-    //   features: [
-    //     { icon: "🔄", text: "Transferable skill mapping for mid-career pivots." },
-    //     { icon: "📋", text: "Psychometric Health Record analysis for growth." },
-    //     { icon: "🏢", text: "Alignment with high-growth industry demands." }
-    //   ]
-    // },
-    // {
-    //   title: "Shikhar",
-    //   badge: "PhD Candidates",
-    //   image: "/img_cards/card8.jpg",
-    //   tagline: "Master your field: reach the peak of academic excellence with high-impact research!",
-    //   objective: "Acting as Sherpas for academic ascent, ensuring your doctoral journey leads to real-world industry impact.",
-    //   features: [
-    //     { icon: "🔍", text: "Research path identification for industry impact." },
-    //     { icon: "🧗", text: "Lifelong Sherpa guidance for the highest peak." },
-    //     { icon: "💼", text: "Mapping expertise to high-level industry roles." }
-    //   ]
-    // },
     {
       title: "Udaan",
       badge: "SAT & Foreign Studies",
@@ -2284,9 +2250,26 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   useEffect(() => {
     async function fetchArticles() {
       try {
-        const latestArticles = await fetchLatestArticles(4);
-        if (latestArticles.length > 0) {
-          setArticles(latestArticles);
+        const indexRes = await fetch('/articles/index.json');
+        if (!indexRes.ok) throw new Error('Failed to load index');
+        const fileList = await indexRes.json();
+
+        // Fetch first 4 articles (Since 1 slot is taken by Career Explorer)
+        const loaded = await Promise.all(
+          fileList.slice(0, 4).map(async (fileName) => {
+            const res = await fetch(`/articles/${fileName}`);
+            if (!res.ok) return null;
+            const data = await res.json();
+            return {
+                ...data,
+                id: data.id || fileName.replace('.json', '')
+            };
+          })
+        );
+        
+        const validArticles = loaded.filter(Boolean);
+        if (validArticles.length > 0) {
+          setArticles(validArticles);
         } else {
           setArticles(fallbackBlogs.slice(0, 4));
         }
@@ -2303,12 +2286,13 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   const displayArticles = articles.length > 0 ? articles : fallbackBlogs.slice(0, 4);
 
   const handleArticleClick = (blog) => {
-    if (blog.slug) {
-      onNavigate(`articles/${blog.slug}`);
-      return;
-    }
-
     onNavigate('articles');
+    if (blog.id && !blog.id.startsWith('f')) {
+        setTimeout(() => {
+            const newUrl = `${window.location.pathname}?article=${blog.id}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+        }, 100);
+    }
   };
 
   return (
@@ -2329,7 +2313,7 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
              ========================================================================= */}
           {displayArticles.map((blog, i) => (
             <motion.div
-              key={blog.slug || blog.id || i}
+              key={blog.id || i}
               initial={{ opacity: 0, scale: 0.97 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: '-50px' }}
@@ -2428,7 +2412,7 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
 
       <div className="container">
         <div style={{ textAlign: 'center', maxWidth: '1200px', margin: '0 auto 6rem auto', padding: '0 20px' }}>
-      
+       
         {/* --- Header Section --- */}
         <span className="text-label" style={{ display: 'block', marginBottom: '10px', fontWeight: 600, color: 'var(--color-text-muted, #64748b)' }}>
           We are co-pilots, not just counselors
@@ -2579,6 +2563,488 @@ const FlipCard = memo(({ title, frontSub, backDesc, icon, shouldReduceAnimations
     </div>
   );
 });
+
+// ============================================================
+// MENTORS DATA & COMPONENTS
+// ============================================================
+const MENTORS = [
+  {
+    id: 1,
+    name: "M P Mall",
+    title: "Independent Director",
+    org: "IXIGO, IRAS, Ex-CMD IRCTC",
+    avatar: "/mentors/mp-mall.jpg",
+    initials: "MM",
+    color: "#1b4965",
+    bio: "A distinguished leader with decades of experience in Indian Railways and travel-tech, M P Mall brings unparalleled insight into public sector leadership, infrastructure, and corporate governance.",
+    domains: ["Leadership", "Public Sector", "Corporate Governance"],
+  },
+  {
+    id: 2,
+    name: "Rajesh Kumar B",
+    title: "Co-Founder & CEO",
+    org: "Kalvium, Faceprep, Prograd",
+    avatar: "/mentors/rajesh-kumar.jpg",
+    initials: "RK",
+    color: "#1a7a94",
+    bio: "Serial edtech entrepreneur with a track record of building platforms that redefine how students learn and get hired. Deep expertise in future-of-work skills and talent pipelines.",
+    domains: ["EdTech", "Entrepreneurship", "Future of Work"],
+  },
+  {
+    id: 3,
+    name: "Dr. Deepa Sethi",
+    title: "Executive Chair",
+    org: "IIM Kozhikode – Globe",
+    avatar: "/mentors/deepa-sethi.jpg",
+    initials: "DS",
+    color: "#2b6d8a",
+    bio: "An authority in OB&HR and leadership development at one of India's premier management institutions. Dr. Sethi's research bridges organizational psychology with real-world career success.",
+    domains: ["OB & HR", "Leadership", "Management Education"],
+  },
+  {
+    id: 4,
+    name: "Aloke Bajpayei",
+    title: "Founder & CEO",
+    org: "IXIGO, IIT Delhi",
+    avatar: "/mentors/aloke-bajpayei.jpg",
+    initials: "AB",
+    color: "#1b4965",
+    bio: "IIT Delhi alumnus and co-founder of IXIGO — one of India's largest travel platforms. Aloke's journey from engineer to entrepreneur is a masterclass in product thinking and scaling consumer tech.",
+    domains: ["Travel Tech", "Product", "Startups"],
+  },
+  {
+    id: 5,
+    name: "Suvrat Ananda",
+    title: "Head, People Strategy",
+    org: "ADNOC Group, DCE, INSEAD",
+    avatar: "/mentors/suvrat-ananda.jpg",
+    initials: "SA",
+    color: "#1a7a94",
+    bio: "A global HR strategist who has shaped talent and culture at ADNOC Group. INSEAD alumnus with deep expertise in workforce planning, diversity, and organisational design.",
+    domains: ["HR Strategy", "Global Talent", "Org Design"],
+  },
+  {
+    id: 6,
+    name: "Diptian Das",
+    title: "Ex-CMD EDCIL, Founder",
+    org: "IRAS",
+    avatar: "/mentors/diptian-das.jpg",
+    initials: "DD",
+    color: "#2b6d8a",
+    bio: "Former CMD of EDCIL, India's premier education consultancy under the Government of India. Brings extensive knowledge of international education partnerships and policy.",
+    domains: ["Education Policy", "International Education", "Public Administration"],
+  },
+  {
+    id: 7,
+    name: "Suryaprakash Pathi",
+    title: "Author & Professor, OB&HR",
+    org: "IIM Kozhikode",
+    avatar: "/mentors/suryaprakash-pathi.jpg",
+    initials: "SP",
+    color: "#1b4965",
+    bio: "Prolific academic and published author in Organizational Behaviour and Human Resources. His research helps students decode workplace dynamics before they even enter one.",
+    domains: ["OB & HR", "Research", "Academic Writing"],
+  },
+  {
+    id: 8,
+    name: "Vaibhav Saxena",
+    title: "Founder & CEO",
+    org: "IPSATOR Analytics, IIT-R",
+    avatar: "/mentors/vaibhav-saxena.jpg",
+    initials: "VS",
+    color: "#1a7a94",
+    bio: "IIT Roorkee alumnus and founder of IPSATOR Analytics, a cutting-edge data science firm. Vaibhav mentors students at the intersection of engineering, data, and entrepreneurship.",
+    domains: ["Data Science", "Analytics", "Deep Tech"],
+  },
+  {
+    id: 9,
+    name: "Sanjiv Sobti",
+    title: "Senior Managing Director",
+    org: "Bear Stearns, JP Morgan, IIMA, Wharton",
+    avatar: "/mentors/sanjiv-sobti.jpg",
+    initials: "SS",
+    color: "#2b6d8a",
+    bio: "Wall Street veteran with senior roles at Bear Stearns and JP Morgan. IIM-A and Wharton alumnus. Brings world-class insight into investment banking, capital markets, and global finance.",
+    domains: ["Investment Banking", "Capital Markets", "Finance"],
+  },
+  {
+    id: 10,
+    name: "Rohit Singh",
+    title: "Practice Head (Data)",
+    org: "SAP, IIT-BHU, SPJIMR",
+    avatar: "/mentors/rohit-singh.jpg",
+    initials: "RS",
+    color: "#1b4965",
+    bio: "Data practice leader at SAP with a strong foundation from IIT-BHU and SPJIMR. Expert in enterprise data architecture, digital transformation, and cloud analytics.",
+    domains: ["Enterprise Data", "Digital Transformation", "Cloud"],
+  },
+];
+
+const MentorCard = memo(({ mentor, onClick }) => {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <motion.div
+      onClick={() => onClick(mentor)}
+      whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(27,73,101,0.15)' }}
+      whileTap={{ scale: 0.97 }}
+      style={{
+        background: 'white',
+        borderRadius: '20px',
+        border: '1px solid var(--frozen-water)',
+        padding: '28px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        cursor: 'pointer',
+        transition: 'box-shadow 0.2s',
+        gap: '12px',
+        boxShadow: '0 4px 16px rgba(27,73,101,0.06)',
+      }}
+    >
+      <div style={{
+        width: '80px',
+        height: '80px',
+        borderRadius: '50%',
+        overflow: 'hidden',
+        border: `3px solid ${mentor.color}22`,
+        flexShrink: 0,
+        background: `${mentor.color}15`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '1.4rem',
+        fontWeight: 700,
+        color: mentor.color,
+      }}>
+        {!imgError ? (
+          <img
+            src={mentor.avatar}
+            alt={mentor.name}
+            onError={() => setImgError(true)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : mentor.initials}
+      </div>
+
+      <div>
+        <p style={{ margin: 0, fontWeight: 800, fontSize: '1rem', color: 'var(--yale-blue)', lineHeight: 1.3 }}>
+          {mentor.name}
+        </p>
+        <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+          {mentor.title}
+        </p>
+        <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: 'var(--pacific-blue)', fontWeight: 600 }}>
+          {mentor.org}
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center' }}>
+        {mentor.domains.slice(0, 2).map((d) => (
+          <span key={d} style={{
+            background: 'var(--frozen-water)',
+            color: 'var(--yale-blue)',
+            borderRadius: '50px',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            padding: '3px 10px',
+          }}>{d}</span>
+        ))}
+      </div>
+
+      <span style={{ fontSize: '0.78rem', color: 'var(--fresh-sky)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+        View Profile <ChevronRight size={13} />
+      </span>
+    </motion.div>
+  );
+});
+
+const MentorModal = memo(({ mentor, onClose }) => {
+  const [imgError, setImgError] = useState(false);
+
+  if (!mentor) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(27, 73, 101, 0.45)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '20px',
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.92, y: 20 }}
+        transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%', maxWidth: '560px',
+          background: 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(24px)',
+          borderRadius: '28px',
+          border: '1px solid rgba(255,255,255,0.8)',
+          boxShadow: '0 30px 60px -10px rgba(27,73,101,0.25)',
+          padding: '36px',
+          position: 'relative',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '20px', right: '20px',
+            background: 'rgba(0,0,0,0.06)', border: 'none',
+            width: '36px', height: '36px', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--yale-blue)', transition: 'background 0.2s',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.12)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
+        >
+          <X size={18} />
+        </button>
+
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginBottom: '24px' }}>
+          <div style={{
+            width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+            border: `3px solid ${mentor.color}33`,
+            background: `${mentor.color}15`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.6rem', fontWeight: 700, color: mentor.color,
+          }}>
+            {!imgError ? (
+              <img src={mentor.avatar} alt={mentor.name} onError={() => setImgError(true)}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : mentor.initials}
+          </div>
+          <div style={{ paddingTop: '4px' }}>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--yale-blue)', lineHeight: 1.2 }}>
+              {mentor.name}
+            </h2>
+            <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
+              {mentor.title}
+            </p>
+            <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--pacific-blue)', fontWeight: 600 }}>
+              {mentor.org}
+            </p>
+          </div>
+        </div>
+
+        <div style={{ height: '1px', background: 'var(--frozen-water)', margin: '0 0 20px' }} />
+
+        <p style={{ margin: '0 0 20px', fontSize: '1rem', color: 'var(--yale-blue)', lineHeight: 1.7 }}>
+          {mentor.bio}
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          {mentor.domains.map((d) => (
+            <span key={d} style={{
+              background: `${mentor.color}12`,
+              color: mentor.color,
+              border: `1px solid ${mentor.color}30`,
+              borderRadius: '50px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              padding: '5px 14px',
+            }}>{d}</span>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+});
+
+const MentorsSection = memo(({ onNavigate, shouldReduceAnimations }) => {
+  const [activeMentor, setActiveMentor] = useState(null);
+  const preview = useMemo(() => MENTORS.slice(0, 5), []);
+
+  return (
+    <section style={{ background: '#f0f9ff', padding: '8rem 0', position: 'relative' }}>
+      <div className="container">
+
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <span className="text-label">The Dream Team</span>
+          <h2 className="text-huge" style={{ marginBottom: '16px' }}>
+            Guided by 50+ Visionary Leaders
+          </h2>
+          <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)', maxWidth: '640px', margin: '0 auto', lineHeight: 1.6 }}>
+            Industry titans from IITs, IIMs, Wall Street, and beyond — ready to help you chart your ascent.
+          </p>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+          gap: '20px',
+          marginBottom: '40px',
+        }}>
+          {preview.map((mentor, i) => (
+            <motion.div
+              key={mentor.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: i * 0.06, duration: 0.35 }}
+            >
+              <MentorCard mentor={mentor} onClick={setActiveMentor} />
+            </motion.div>
+          ))}
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <motion.button
+            whileHover={{ scale: 1.04, boxShadow: '0 8px 28px rgba(27,73,101,0.35)' }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => onNavigate('mentors')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '10px',
+              padding: '16px 36px',
+              background: 'linear-gradient(135deg, var(--yale-blue) 0%, var(--fresh-sky) 100%)',
+              color: 'white', border: 'none', borderRadius: '16px',
+              fontSize: '1.05rem', fontWeight: 800, cursor: 'pointer',
+              boxShadow: '0 6px 20px rgba(27,73,101,0.3)',
+            }}
+          >
+            Meet All 50+ Mentors <ChevronRight size={18} />
+          </motion.button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {activeMentor && (
+          <MentorModal mentor={activeMentor} onClose={() => setActiveMentor(null)} />
+        )}
+      </AnimatePresence>
+    </section>
+  );
+});
+
+const MentorsPage = ({ onNavigate }) => {
+  const [activeMentor, setActiveMentor] = useState(null);
+  const [search, setSearch] = useState('');
+  const [activeTag, setActiveTag] = useState('All');
+
+  const allTags = useMemo(() => {
+    const tags = new Set(['All']);
+    MENTORS.forEach((m) => m.domains.forEach((d) => tags.add(d)));
+    return [...tags];
+  }, []);
+
+  const filtered = useMemo(() => {
+    return MENTORS.filter((m) => {
+      const matchSearch = m.name.toLowerCase().includes(search.toLowerCase()) ||
+        m.org.toLowerCase().includes(search.toLowerCase()) ||
+        m.title.toLowerCase().includes(search.toLowerCase());
+      const matchTag = activeTag === 'All' || m.domains.includes(activeTag);
+      return matchSearch && matchTag;
+    });
+  }, [search, activeTag]);
+
+  return (
+    <div style={{ background: '#f8fbff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <GlobalStyles />
+      <Navbar onNavigate={onNavigate} />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{ flexGrow: 1, paddingTop: '120px', paddingBottom: '80px' }}
+      >
+        <div className="container" style={{ maxWidth: '1200px' }}>
+
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <span className="text-label">Our Advisory Board</span>
+            <h1 className="text-huge" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '16px' }}>
+              Meet Your Mentors
+            </h1>
+            <p style={{ fontSize: '1.15rem', color: 'var(--color-text-muted)', maxWidth: '640px', margin: '0 auto', lineHeight: 1.6 }}>
+              Over 50 industry veterans, academics, and founders — personally curated to guide your career journey.
+            </p>
+          </div>
+
+          <div style={{
+            background: 'white', borderRadius: '20px', padding: '20px 24px',
+            boxShadow: '0 4px 20px rgba(27,73,101,0.06)',
+            border: '1px solid var(--frozen-water)',
+            marginBottom: '36px',
+            display: 'flex', flexDirection: 'column', gap: '16px',
+          }}>
+            <input
+              type="text"
+              placeholder="Search by name, institution, or role…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                width: '100%', padding: '12px 16px', borderRadius: '10px',
+                border: '1px solid var(--frozen-water)',
+                background: 'var(--pale-sky)',
+                color: 'var(--yale-blue)', fontSize: '0.95rem', outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {allTags.slice(0, 12).map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setActiveTag(tag)}
+                  style={{
+                    padding: '6px 16px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 700,
+                    cursor: 'pointer', border: 'none', transition: 'all 0.15s',
+                    background: activeTag === tag ? 'var(--yale-blue)' : 'var(--frozen-water)',
+                    color: activeTag === tag ? 'white' : 'var(--yale-blue)',
+                  }}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: '24px',
+          }}>
+            {filtered.map((mentor, i) => (
+              <motion.div
+                key={mentor.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04, duration: 0.3 }}
+              >
+                <MentorCard mentor={mentor} onClick={setActiveMentor} />
+              </motion.div>
+            ))}
+            {filtered.length === 0 && (
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px 0', color: 'var(--color-text-muted)' }}>
+                No mentors found for "{search}".
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      <AnimatePresence>
+        {activeMentor && (
+          <MentorModal mentor={activeMentor} onClose={() => setActiveMentor(null)} />
+        )}
+      </AnimatePresence>
+
+      <Footer onNavigate={onNavigate} />
+    </div>
+  );
+};
+
 
 // --- TESTIMONIALS SECTION - Memoized ---
 const TestimonialsSection = memo(({ shouldReduceAnimations }) => {
@@ -2771,7 +3237,7 @@ const AboutUsPage = ({ onNavigate }) => {
       <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <li><strong>Knows you better than anyone:</strong> Using scientific psychometric "mirrors" to reflect your true natural abilities.</li>
         <li><strong>Stays with you through the "Difficult and Good":</strong> From the stress of Class 10 stream selection to your first job promotion ten years later.</li>
-        <li><strong>Speaks the Truth:</strong> Not just "Engineering or Medicine," but introducing you to diverse careers like Toy Designer, AI Ethicist, or Renewable Energy Specialist.</li>
+        <li><strong>Speaks the Truth:</strong> Not just "Engineering or Medicine," but introducing you to 500+ careers like Toy Designer, AI Ethicist, or Renewable Energy Specialist.</li>
       </ul>
 
       {/* Secret Sauce */}
@@ -2831,7 +3297,7 @@ const AboutUsPage = ({ onNavigate }) => {
       </h3>
       <p>We have spent 6 years in the K-12 and Higher Education sectors and 4 years scaling India's biggest EdTechs. We've seen the systems that fail and the ones that fly.</p>
       <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <li><strong>Exhaustive Library:</strong> We don't just know a few jobs. We have a master database of job roles specifically built for the Indian market.</li>
+        <li><strong>Exhaustive Library:</strong> We don't just know 10 jobs. We have a master database of 500+ job roles specifically built for the Indian market.</li>
         <li><strong>Master Experts:</strong> Every counselor on our platform must have a Master’s Degree in Psychology with experience mentoring children and adolesents. No exceptions. No shortcuts.</li>
         <li><strong>Trade Secret Assessments:</strong> Our tests aren't found in textbooks. They are proprietary algorithms built to detect the "Digital Premium" skills of the 2030s.</li>
       </ul>
@@ -2883,7 +3349,7 @@ const TermsPage = ({ onNavigate }) => {
       <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '24px', color: 'var(--yale-blue)' }}>4. Intellectual Property and "Trade Secret" Status</h3>
       <p>The assessments provided by Myaarohan are the result of significant scientific research and investment.</p>
       <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '10px' }}>
-        <li><strong>Ownership:</strong> Myaarohan retains all rights, title, and interest in the psychometric methodologies, scoring algorithms, software code, and the Job Role Database.</li>
+        <li><strong>Ownership:</strong> Myaarohan retains all rights, title, and interest in the psychometric methodologies, scoring algorithms, software code, and the 500+ Job Role Database.</li>
         <li><strong>Trade Secrets:</strong> You acknowledge that the assessment questions, test structures, and sequences are Confidential Trade Secrets.</li>
         <li><strong>License:</strong> We grant you a limited, non-exclusive, non-transferable license to access results for personal, non-commercial use only.</li>
         <li><strong>Trade Secret Protection:</strong> All assessment questions and testing structures are treated as confidential trade secrets.</li>
@@ -2973,7 +3439,7 @@ const PrivacyPage = ({ onNavigate }) => {
       <p>Your data is processed exclusively for:</p>
       <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '10px' }}>
         <li>Generating scientific career guidance reports.</li>
-        <li>Matching student profiles to the Job Role Database.</li>
+        <li>Matching student profiles to the 500+ Job Role Database.</li>
         <li>Improving the accuracy of our psychometric algorithms through anonymized research.</li>
       </ul>
 
@@ -3057,7 +3523,7 @@ const CounselorPage = ({ onNavigate }) => {
       <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '10px' }}>
         <li><strong>Assessment Confidentiality:</strong> You acknowledge that Myaarohan’s psychometric assessment questions, scoring logic, and algorithms are Confidential Trade Secrets.</li>
         <li><strong>Strict Non-Distribution:</strong> You are strictly prohibited from copying, transcribing, photographing, or distributing any assessment questions or testing methodologies to any third party.</li>
-        <li><strong>Non-Compete for Content:</strong> You agree not to use Myaarohan’s proprietary assessment content or the Job Role Matrix for any private counseling practice or competing platform outside of Myaarohan.</li>
+        <li><strong>Non-Compete for Content:</strong> You agree not to use Myaarohan’s proprietary assessment content or the 500+ Job Role Matrix for any private counseling practice or competing platform outside of Myaarohan.</li>
       </ul>
 
       <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '24px', color: 'var(--yale-blue)' }}>4. Counselor Obligations and Service Standards</h3>
@@ -3233,18 +3699,15 @@ export const Footer = ({ onNavigate }) => {
                 <h4 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fresh-sky)', marginBottom: '1.5rem' }}>Platform</h4>
                 {/* Added paddingLeft for tabbed indentation */}
                 <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: 'var(--frozen-water)' }}>
-                  <li>
-                    <a href="#" onClick={(e) => handleLinkClick(e, 'home')} style={{ color: 'inherit', textDecoration: 'none', cursor: 'pointer' }}>For Students</a>
-                  </li>
-                  <li>
-                    <a href="#" onClick={(e) => handleLinkClick(e, 'home')} style={{ color: 'inherit', textDecoration: 'none', cursor: 'pointer' }}>For Schools</a>
-                  </li>
+                  {['For Students', 'For Schools'].map((text, i) => (
+                    <li key={i}><a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{text}</a></li>
+                  ))}
                   {/* ✅ Pricing Link -> Redirects to Programs */}
                   <li>
                     <a href="#programs" onClick={(e) => handleLinkClick(e, 'Counselor')} style={{ color: 'inherit', textDecoration: 'none', cursor: 'pointer' }}>Counselor</a>
                   </li>
                   <li>
-                    <a href="#" onClick={(e) => handleLinkClick(e, 'pricing')} style={{ color: 'inherit', textDecoration: 'none', cursor: 'pointer' }}>Pricing</a>
+                    <a href="#programs" onClick={(e) => handleLinkClick(e, '#programs')} style={{ color: 'inherit', textDecoration: 'none', cursor: 'pointer' }}>Pricing</a>
                   </li>
                 </ul>
               </div>
@@ -3254,8 +3717,8 @@ export const Footer = ({ onNavigate }) => {
                 <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: 'var(--frozen-water)' }}>
                   {/* ✅ About Us Link */}
                   <li><a href="#" onClick={(e) => handleLinkClick(e, 'about')} style={{ color: 'inherit', textDecoration: 'none' }}>About Us</a></li>
-                  <li><a href="#" onClick={(e) => handleLinkClick(e, '/career')} style={{ color: 'inherit', textDecoration: 'none' }}>Career</a></li>
-                  <li><a href="#" onClick={(e) => handleLinkClick(e, '/articles')} style={{ color: 'inherit', textDecoration: 'none' }}>Knowledge Hub</a></li>
+                  <li><a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Careers</a></li>
+                  <li><a href="#" onClick={(e) => handleLinkClick(e, '#blog')} style={{ color: 'inherit', textDecoration: 'none' }}>Knowledge Hub</a></li>
                 </ul>
               </div>
             </div>
@@ -3300,16 +3763,24 @@ export const Footer = ({ onNavigate }) => {
 
 // --- NEW: Pricing / Our Offering Page ---
 
-const PizzaImage = ({ size = 24 }) => (
+// Make sure to import Navbar, Footer, GlobalStyles etc.
+
+// Custom Pizza SVG - Simple line art, no fill colors
+// Custom SVG matching the uploaded pizza slice image style
+// Local Image Component replacing the SVG
+
+// Dummy Pizza Image (Update path as per your project)
+
+
+const PizzaImage = ({ size = 20 }) => (
   <img
-    src="/pay/pizza.jpeg"
+    src="/pay/pizza.svg" 
     alt="Pizza Icon"
     style={{
       width: `${size}px`,
       height: `${size}px`,
       objectFit: 'contain',
-      display: 'block',
-      flexShrink: 0,
+      display: 'block'
     }}
   />
 );
@@ -3319,17 +3790,19 @@ const PricingPage = ({ onNavigate }) => {
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 499 + GST</span>,
       tagColor: '#e68161',
-      icon: <PizzaImage size={80} />,
-      title: '360° AI Career Assessment',
-      subtitle: '',
-      price: <>₹ 199</>,
-      saveBadge: 'Save 60%',
+      icon: <PizzaImage size={80} />, 
+      title: '360\u00B0 AI Career Assessment',
+      subtitle: '', 
+      // Added (inc GST) in small text
+      price: <>₹ 199 <span style={{ fontSize: '1rem', fontWeight: 500 }}>(inc GST)</span></>,
+      saveBadge: 'Save 60%', 
+
       borderColor: '#e68161',
       gradientFrom: 'rgba(230, 129, 97, 0.05)',
       accentColor: '#e68161',
       description: 'This entry-level program provides a scientific "mirror" to help students move beyond academic marks and discover their internal Aptitude DNA',
       features: [
-        '360° Multidimensional Assessment - measure what you can do, who you are, and what you want to do, and how you can achieve what you want',
+        '360\u00B0 Multidimensional Assessment - measure what you can do, who you are, and what you want to do, and how you can achieve what you want',
         'Interactive Result and AI-Driven Recommendation Engine',
         '3-month access to AI-Driven Career Mentorship',
         '3-month access to 5000+ Live Job Encyclopedia',
@@ -3339,18 +3812,20 @@ const PricingPage = ({ onNavigate }) => {
     },
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 1,499 + GST</span>,
-      tagColor: '#2563eb',
-      icon: <PizzaImage size={120} />,
-      title: '360° Career Mentorship',
-      subtitle: '',
-      price: <>₹ 749</>,
-      saveBadge: 'Save 50%',
-      borderColor: '#2563eb',
+      tagColor: '#2563eb', 
+      icon: <PizzaImage size={120} />, 
+      title: '360\u00B0 Career Mentorship',
+      subtitle: '', 
+      // Added (inc GST) in small text
+      price: <>₹ 749 <span style={{ fontSize: '1rem', fontWeight: 500 }}>(inc GST)</span></>,
+      saveBadge: 'Save 50%', 
+
+      borderColor: '#2563eb', 
       gradientFrom: 'rgba(37, 99, 235, 0.05)',
       accentColor: '#2563eb',
       description: 'This program helps students with a "Human Compass or a Sherpa" to decode complex data into an actionable strategy',
       features: [
-        'All features of 360° AI Career Assessment',
+        'All features of 360\u00B0 AI Career Assessment',
         '30-minute, one-on-one Mentorship Session with our Career Experts',
         '6-month access to AI-Driven Career Mentorship',
         '6-month access to 5000+ Live Job Encyclopedia',
@@ -3361,17 +3836,19 @@ const PricingPage = ({ onNavigate }) => {
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 3,999 + GST</span>,
       tagColor: '#8b5cf6',
-      icon: <PizzaImage size={160} />,
-      title: '360° Complete Career Discovery',
+      icon: <PizzaImage size={160} />, 
+      title: '360\u00B0 Complete Career Discovery',
       subtitle: '',
-      price: <>₹ 1,999</>,
+      // Added (inc GST) in small text
+      price: <>₹ 1,999 <span style={{ fontSize: '1rem', fontWeight: 500 }}>(inc GST)</span></>,
       saveBadge: 'Save 50%',
+
       borderColor: '#8b5cf6',
       gradientFrom: 'rgba(139, 92, 246, 0.06)',
       accentColor: '#8b5cf6',
       description: 'The premium tier offers the full "Lifelong Career Mentorship" ecosystem, connecting students with top-tier industry veterans to guide them',
       features: [
-        'All features of 360° AI Career Assessment',
+        'All features of 360\u00B0 AI Career Assessment',
         '60-minute, one-on-one Mentorship Session with our Industry Venteran/Experts',
         '12-month access to AI-Driven Career Mentorship',
         '12-month access to 5000+ Live Job Encyclopedia',
@@ -3388,9 +3865,7 @@ const PricingPage = ({ onNavigate }) => {
 
   return (
     <div style={{ background: '#f8fbff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <GlobalStyles />
-      <Navbar onNavigate={onNavigate} />
-
+      
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -3398,6 +3873,7 @@ const PricingPage = ({ onNavigate }) => {
         style={{ flexGrow: 1, paddingTop: '100px', paddingBottom: '60px' }}
       >
         <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+          
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <h1 className="text-huge" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '12px' }}>
@@ -3429,11 +3905,11 @@ const PricingPage = ({ onNavigate }) => {
                   cursor: 'default',
                 }}
               >
-                {/* Tag */}
+                {/* Top-Right Tag */}
                 <div style={{
                   position: 'absolute', top: 0, right: 0,
                   background: plan.tagColor, color: 'white',
-                  padding: '6px 16px', fontSize: '0.9rem', fontWeight: 700,
+                  padding: '6px 16px', fontSize: '0.9rem', fontWeight: 700, 
                   borderBottomLeftRadius: '12px', letterSpacing: '0.05em',
                   zIndex: 2,
                 }}>
@@ -3447,7 +3923,7 @@ const PricingPage = ({ onNavigate }) => {
                     <div style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0,
-                      width: '160px',
+                      width: '160px', 
                     }}>
                       {plan.icon}
                     </div>
@@ -3473,13 +3949,13 @@ const PricingPage = ({ onNavigate }) => {
                     </div>
                   )}
 
-                  {/* Description ("What you get:") */}
+                  {/* Description - Removed "What you get:" */}
                   <div style={{
                     background: `${plan.accentColor}08`, borderRadius: '12px', padding: '16px', marginBottom: '20px',
-                    minHeight: '130px'
+                    minHeight: '130px' 
                   }}>
                     <p style={{ margin: 0, fontSize: '0.95rem', color: '#4a7a96', lineHeight: 1.6 }}>
-                      <strong style={{ color: '#0e2b3c' }}>What you get:</strong><br />{plan.description}
+                      {plan.description}
                     </p>
                   </div>
 
@@ -3530,10 +4006,13 @@ const PricingPage = ({ onNavigate }) => {
           </div>
         </div>
       </motion.div>
-      <Footer onNavigate={onNavigate} />
     </div>
   );
 };
+
+
+
+
 
 // --- Main Page Component (With View Switching & Performance Optimizations) ---
 export function BannerPage({ onNavigate, initialView }) {
@@ -3548,27 +4027,21 @@ export function BannerPage({ onNavigate, initialView }) {
   const handleMainNavigate = useCallback((dest) => {
     if (dest === 'home') setCurrentView('home');
     else if (dest === 'pricing') { onNavigate('/pricing'); setCurrentView('pricing'); }
+    else if (dest === 'mentors') { setCurrentView('mentors'); }
     else onNavigate(dest);
   }, [onNavigate]);
 
-  const handlePageNavigate = useCallback((dest) => {
-    window.scrollTo(0, 0);
-    const localViews = new Set(['home', 'about', 'terms', 'privacy', 'Counselor', 'pricing']);
-    if (dest && dest.startsWith('student-register')) {
-      handleMainNavigate(dest);
-    } else if (localViews.has(dest)) {
-      setCurrentView(dest);
-    } else {
-      handleMainNavigate(dest);
-    }
-  }, [handleMainNavigate]);
-
   // Render the correct page based on currentView state
-  if (currentView === 'about') return <AboutUsPage onNavigate={handlePageNavigate} />;
-  if (currentView === 'terms') return <TermsPage onNavigate={handlePageNavigate} />;
-  if (currentView === 'privacy') return <PrivacyPage onNavigate={handlePageNavigate} />;
-  if (currentView === 'Counselor') return <CounselorPage onNavigate={handlePageNavigate} />;
-  if (currentView === 'pricing') return <PricingPage onNavigate={handlePageNavigate} />;
+  if (currentView === 'about') return <AboutUsPage onNavigate={setCurrentView} />;
+  if (currentView === 'terms') return <TermsPage onNavigate={setCurrentView} />;
+  if (currentView === 'privacy') return <PrivacyPage onNavigate={setCurrentView} />;
+  if (currentView === 'Counselor') return <CounselorPage onNavigate={setCurrentView} />;
+  if (currentView === 'pricing') return <PricingPage onNavigate={(dest) => {
+    window.scrollTo(0, 0);
+    if (dest && dest.startsWith('student-register')) { handleMainNavigate(dest); }
+    else { setCurrentView(dest); }
+  }} />;
+  if (currentView === 'mentors') return <MentorsPage onNavigate={setCurrentView} />;
 
   // Default: Render the full Banner Page (Home)
   return (
@@ -3596,10 +4069,14 @@ export function BannerPage({ onNavigate, initialView }) {
       <BlogSection onNavigate={handleMainNavigate} shouldReduceAnimations={shouldReduceAnimations} /> 
       
       <AboutSection shouldReduceAnimations={shouldReduceAnimations} />
+      
+      {/* MENTORS SECTION ADDED HERE */}
+      <MentorsSection onNavigate={handleMainNavigate} shouldReduceAnimations={shouldReduceAnimations} />
+      
       <TestimonialsSection shouldReduceAnimations={shouldReduceAnimations} />
       
       </main>
-      <Footer onNavigate={handlePageNavigate} />
+      <Footer onNavigate={setCurrentView} />
     </div>
   );
 }
