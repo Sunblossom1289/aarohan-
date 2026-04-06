@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { supportAPI } from '../../services/api';
 
 const CATEGORIES = ['Technical', 'Academic', 'Counseling', 'Payment', 'Other'];
-const PRIORITIES  = ['Low', 'Medium', 'High'];
 
 const CATEGORY_ICONS = {
   Technical:  'fa-screwdriver-wrench',
@@ -12,12 +11,7 @@ const CATEGORY_ICONS = {
   Other:      'fa-clipboard-list',
 };
 
-const PRIORITY_COLORS = {
-  Low:    { bg: '#dcfce7', text: '#166534', border: '#86efac' },
-  Medium: { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
-  High:   { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' },
-};
-
+// Default priority is kept as 'Medium' so the backend doesn't fail, but it's hidden from the UI.
 const EMPTY = { category: '', priority: 'Medium', subject: '', description: '' };
 
 export function StudentSupport({ user, onNavigate }) {
@@ -53,7 +47,7 @@ export function StudentSupport({ user, onNavigate }) {
         studentEmail: user?.email || 'No email on record',
         studentPhone: user?.phone || 'Not provided',
         category:     form.category,
-        priority:     form.priority,
+        priority:     form.priority, // Sends default 'Medium' automatically
         subject:      form.subject.trim(),
         description:  form.description.trim(),
       });
@@ -176,36 +170,6 @@ export function StudentSupport({ user, onNavigate }) {
                     <i className="fas fa-exclamation-circle" style={{ marginRight: 4 }}></i>{errors.category}
                   </p>
                 )}
-              </div>
-
-              {/* ── Priority ── */}
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontWeight: 600, color: '#374151', marginBottom: 8, fontSize: 14 }}>
-                  Priority
-                </label>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  {PRIORITIES.map(p => {
-                    const c = PRIORITY_COLORS[p];
-                    const selected = form.priority === p;
-                    return (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => set('priority', p)}
-                        style={{
-                          padding: '8px 20px', borderRadius: 8, cursor: 'pointer',
-                          fontSize: 13, fontWeight: 600, transition: 'all 0.18s ease',
-                          border: `2px solid ${selected ? c.border : '#e2e8f0'}`,
-                          background: selected ? c.bg : 'white',
-                          color: selected ? c.text : '#64748b',
-                          boxShadow: selected ? `0 2px 8px ${c.border}66` : 'none',
-                        }}
-                      >
-                        {p}
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
 
               {/* ── Subject ── */}

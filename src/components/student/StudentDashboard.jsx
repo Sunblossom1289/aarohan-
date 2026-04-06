@@ -16,9 +16,24 @@ export function StudentDashboard({ state, dispatch, onNavigate }) {
   
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Welcome, {user.name || 'Student'}!</h1>
-        <p className="page-subtitle">Your learning journey starts here</p>
+      {/* UPDATE 1: Header flexbox to put Welcome on left and Program on right */}
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h1 className="page-title" style={{ margin: 0 }}>Welcome, {user.name || 'Student'}!</h1>
+          <p className="page-subtitle" style={{ margin: '4px 0 0' }}>Your learning journey starts here</p>
+        </div>
+        
+        {/* Current Program Tag moved to header */}
+        <div style={{ 
+          background: '#f8fbff', 
+          padding: '10px 20px', 
+          borderRadius: '12px', 
+          border: '1px solid #e1e8ed',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+        }}>
+          <span style={{ fontSize: '14px', color: '#4a7a96' }}>Current Program: </span>
+          <strong style={{ fontSize: '16px', color: '#0e2b3c' }}>{program?.name || 'N/A'}</strong>
+        </div>
       </div>
 
       {/* Profile Completion Alert Banner */}
@@ -58,24 +73,29 @@ export function StudentDashboard({ state, dispatch, onNavigate }) {
           </button>
         </div>
       )}
-      <div className="grid grid-2 mb-24" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+
+      {/* UPDATE 2: Grid changed to 3 columns (repeat(3, 1fr)) */}
+      <div className="grid mb-24" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+        
+        {/* Box 1: Tests Completed */}
         <div className="stat-card" style={{ position: 'relative' }}>
           <div className="stat-value">{tests.filter(t => t.status === 'completed').length}/{tests.length}</div>
           <div className="stat-label">Tests Completed</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-value">{program?.name || 'N/A'}</div>
-          <div className="stat-label">Current Program</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{user.counselingCredits || 0}</div>
-          <div className="stat-label">Mentorship Sessions</div>
+
+        {/* Box 2: Mentorship Sessions */}
+        <div className="stat-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <div className="stat-value">{user.counselingCredits || 0}</div>
+            <div className="stat-label">Mentorship Sessions</div>
+          </div>
           <button
             className="btn"
             onClick={() => onNavigate('upgrade')}
             style={{
-              marginTop: 'var(--space-12)',
-              padding: '8px 16px',
+              marginTop: 'auto', // Pushes button to bottom
+              width: '100%',     // Full width button
+              padding: '10px 16px',
               fontSize: 'var(--font-size-sm)',
               background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-teal-600) 100%)',
               color: 'white',
@@ -84,21 +104,27 @@ export function StudentDashboard({ state, dispatch, onNavigate }) {
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px'
+              justifyContent: 'center',
+              gap: '8px'
             }}
           >
             <i className="fas fa-arrow-up-right-dots"></i> View Plans
           </button>
         </div>
-        <div className="stat-card">
-          <div className="stat-value">{user.testCredits || 0}</div>
-          <div className="stat-label">Test Sessions</div>
+
+        {/* Box 3: Test Sessions */}
+        <div className="stat-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <div className="stat-value">{user.testCredits || 0}</div>
+            <div className="stat-label">Test Sessions</div>
+          </div>
           <button
             className="btn"
             onClick={() => onNavigate('upgrade')}
             style={{
-              marginTop: 'var(--space-12)',
-              padding: '8px 16px',
+              marginTop: 'auto', // Pushes button to bottom
+              width: '100%',     // Full width button
+              padding: '10px 16px',
               fontSize: 'var(--font-size-sm)',
               background: 'linear-gradient(135deg, #e68161 0%, #d97046 100%)',
               color: 'white',
@@ -107,13 +133,16 @@ export function StudentDashboard({ state, dispatch, onNavigate }) {
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px'
+              justifyContent: 'center',
+              gap: '8px'
             }}
           >
             <i className="fas fa-arrow-up-right-dots"></i> View Plans
           </button>
         </div>
       </div>
+
+      {/* Profile Info and Quick Actions Grid */}
       <div className="grid grid-2 mb-24">
         <div className="card">
           <div className="card-header">
@@ -181,6 +210,8 @@ export function StudentDashboard({ state, dispatch, onNavigate }) {
           </div>
         </div>
       </div>
+
+      {/* Assessment Status */}
       <div className="card">
         <div className="card-header">
           <h3 className="card-title">Assessment Status</h3>

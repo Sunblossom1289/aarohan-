@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const PizzaImage = ({ size = 24 }) => (
   <img
-    src="/pay/pizza.jpeg"
+    src="/pay/pizza.png"
     alt="Pizza Icon"
     style={{
       width: `${size}px`,
@@ -37,21 +37,21 @@ export function ProgramUpgrade({ user, onNavigate }) {
       title: '360° AI Career Assessment',
       subtitle: '',
       amount: 199,
-      priceLabel: <>₹ 199</>,
+      priceLabel: <>₹ 199 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       icon: <PizzaImage size={80} />,
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 499 + GST</span>,
-      tagColor: '#e68161',
+      tagColor: '#b5833d',
       saveBadge: 'Save 60%',
-      borderColor: '#e68161',
-      gradientFrom: 'rgba(230, 129, 97, 0.05)',
-      accentColor: '#e68161',
-      gradient: 'linear-gradient(135deg, #e68161 0%, #d97046 100%)',
-      description: 'Scientific mirror for Aptitude, Personality, and Interest discovery with AI recommendations.',
+      borderColor: '#b5833d',
+      gradientFrom: 'rgba(181, 131, 61, 0.05)',
+      accentColor: '#b5833d',
+      gradient: 'linear-gradient(135deg, #b5833d 0%, #9c6f30 100%)',
+      description: 'This entry-level program provides a scientific "mirror" to help students move beyond academic marks and discover their internal Aptitude DNA',
       features: [
-        '360° multidimensional assessment',
-        'Interactive result and AI-driven recommendation engine',
-        '3-month access to AI-driven career mentorship',
-        '3-month access to 5000+ live job encyclopedia'
+        '360° Multidimensional Assessment - measure what you can do, who you are, and what you want to do, and how you can achieve what you want',
+        'Interactive Result and AI-Driven Recommendation Engine',
+        '3-month access to AI-Driven Career Mentorship',
+        '3-month access to 5000+ Live Job Encyclopedia'
       ],
       whatsappMessage: 'Hi! I have made a payment of ₹199 for the 360° AI Career Assessment plan. Please find my payment screenshot attached.',
       confirmText: "Once our team verifies your payment, we'll activate your 360° AI Career Assessment access. You'll receive a confirmation message."
@@ -60,21 +60,21 @@ export function ProgramUpgrade({ user, onNavigate }) {
       title: '360° Career Mentorship',
       subtitle: '',
       amount: 749,
-      priceLabel: <>₹ 749</>,
+      priceLabel: <>₹ 749 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       icon: <PizzaImage size={120} />,
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 1,499 + GST</span>,
-      tagColor: '#2563eb',
+      tagColor: '#60a8d3',
       saveBadge: 'Save 50%',
-      borderColor: '#2563eb',
-      gradientFrom: 'rgba(37, 99, 235, 0.05)',
-      accentColor: '#2563eb',
-      gradient: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-      description: 'Includes assessment insights plus a one-on-one mentorship session to turn data into action.',
+      borderColor: '#60a8d3',
+      gradientFrom: 'rgba(96, 168, 211, 0.05)',
+      accentColor: '#60a8d3',
+      gradient: 'linear-gradient(135deg, #60a8d3 0%, #468eb9 100%)',
+      description: 'This program helps students with a "Human Compass or a Sherpa" to decode complex data into an actionable strategy',
       features: [
         'All features of 360° AI Career Assessment',
-        '30-minute one-on-one mentorship session with career experts',
-        '6-month access to AI-driven career mentorship',
-        '6-month access to 5000+ live job encyclopedia'
+        '30-minute, one-on-one Mentorship Session with our Career Experts',
+        '6-month access to AI-Driven Career Mentorship',
+        '6-month access to 5000+ Live Job Encyclopedia'
       ],
       whatsappMessage: 'Hi! I have made a payment of ₹749 for the 360° Career Mentorship plan. Please find my payment screenshot attached.',
       confirmText: "Once our team verifies your payment, we'll activate your 360° Career Mentorship plan and confirm your mentorship benefits."
@@ -83,22 +83,22 @@ export function ProgramUpgrade({ user, onNavigate }) {
       title: '360° Complete Career Discovery',
       subtitle: '',
       amount: 1999,
-      priceLabel: <>₹ 1,999</>,
+      priceLabel: <>₹ 1,999 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       icon: <PizzaImage size={160} />,
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 3,999 + GST</span>,
-      tagColor: '#8b5cf6',
+      tagColor: '#b5833d',
       saveBadge: 'Save 50%',
-      borderColor: '#8b5cf6',
-      gradientFrom: 'rgba(139, 92, 246, 0.06)',
-      accentColor: '#8b5cf6',
-      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-      description: 'Full mentorship ecosystem with deeper expert support and long-term career discovery access.',
+      borderColor: '#b5833d',
+      gradientFrom: 'rgba(181, 131, 61, 0.06)',
+      accentColor: '#b5833d',
+      gradient: 'linear-gradient(135deg, #b5833d 0%, #9c6f30 100%)',
+      description: 'The premium tier offers the full "Lifelong Career Mentorship" ecosystem, connecting students with top-tier industry veterans to guide them',
       features: [
         'All features of 360° AI Career Assessment',
-        '60-minute one-on-one mentorship session with industry veteran/experts',
-        '12-month access to AI-driven career mentorship',
-        '12-month access to 5000+ live job encyclopedia',
-        'Tailored expert report review for all three assessments'
+        '60-minute, one-on-one Mentorship Session with our Industry Venteran/Experts',
+        '12-month access to AI-Driven Career Mentorship',
+        '12-month access to 5000+ Live Job Encyclopedia',
+        'Tailored Expert Report Review for the three assessments'
       ],
       whatsappMessage: 'Hi! I have made a payment of ₹1,999 for the 360° Complete Career Discovery plan. Please find my payment screenshot attached.',
       confirmText: "Once our team verifies your payment, we'll activate your 360° Complete Career Discovery plan and share confirmation details."
@@ -176,21 +176,21 @@ export function ProgramUpgrade({ user, onNavigate }) {
         maxWidth: '1200px',
         margin: '0 auto var(--space-24)',
         padding: 'var(--space-16) var(--space-20)',
-        background: 'linear-gradient(135deg, rgba(230, 129, 97, 0.08) 0%, rgba(37, 99, 235, 0.08) 50%, rgba(139, 92, 246, 0.08) 100%)',
+        background: 'linear-gradient(135deg, rgba(181, 131, 61, 0.08) 0%, rgba(96, 168, 211, 0.08) 50%, rgba(181, 131, 61, 0.08) 100%)',
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid rgba(37, 99, 235, 0.15)',
+        border: '1px solid rgba(96, 168, 211, 0.15)',
         display: 'flex',
         alignItems: 'center',
         gap: 'var(--space-16)',
         flexWrap: 'wrap'
       }}>
-        <i className="fas fa-info-circle" style={{ color: '#2563eb', fontSize: '20px', flexShrink: 0 }}></i>
+        <i className="fas fa-info-circle" style={{ color: '#60a8d3', fontSize: '20px', flexShrink: 0 }}></i>
         <div style={{ flex: 1, minWidth: '200px' }}>
           <p style={{ margin: 0, fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--font-size-base)', color: 'var(--color-text)' }}>
-            Same pricing as Banner "Our Offering"
+            
           </p>
           <p style={{ margin: 'var(--space-4) 0 0', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-            Pick from <strong style={{ color: '#e68161' }}>₹199</strong>, <strong style={{ color: '#2563eb' }}>₹749</strong>, or <strong style={{ color: '#8b5cf6' }}>₹1,999</strong>. Complete payment, share screenshot on WhatsApp, and your plan gets activated after verification.
+            <strong style={{ color: '#b5833d' }}></strong><strong style={{ color: '#60a8d3' }}></strong> <strong style={{ color: '#b5833d' }}></strong>Complete payment, share screenshot on WhatsApp, and your plan gets activated after verification.
           </p>
         </div>
       </div>
@@ -298,15 +298,15 @@ export function ProgramUpgrade({ user, onNavigate }) {
                   borderRadius: '12px',
                   padding: '16px',
                   marginBottom: '20px',
-                  minHeight: '130px'
+                  minHeight: '150px' // Increased height
                 }}>
                   <p style={{
                     margin: 0,
-                    fontSize: '0.95rem',
-                    color: '#4a7a96',
-                    lineHeight: 1.6
+                    fontSize: '1.1rem', // Increased font size
+                    color: '#0e2b3c',
+                    lineHeight: 1.6,
+                    fontWeight: 500 // Increased font weight
                   }}>
-                    <strong style={{ color: '#0e2b3c' }}>What you get:</strong><br />
                     {plan.description}
                   </p>
                 </div>
@@ -355,7 +355,6 @@ export function ProgramUpgrade({ user, onNavigate }) {
                   onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 6px 16px ${plan.accentColor}50`; }}
                   onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 12px ${plan.accentColor}40`; }}
                 >
-                  <i className="fas fa-arrow-up-right-dots"></i>
                   Upgrade now
                 </button>
               </div>
@@ -403,7 +402,7 @@ export function ProgramUpgrade({ user, onNavigate }) {
               </p>
               <span style={{ color: 'var(--color-text-secondary)' }}>•</span>
               <p style={{ margin: 0, fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-xl)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                <i className="fas fa-clipboard-check" style={{ color: '#e68161', fontSize: '16px' }}></i>
+                <i className="fas fa-clipboard-check" style={{ color: '#b5833d', fontSize: '16px' }}></i>
                 {user?.testCredits || 0} Test {user?.testCredits === 1 ? 'Session' : 'Sessions'}
               </p>
             </div>
@@ -417,7 +416,7 @@ export function ProgramUpgrade({ user, onNavigate }) {
             </button>
           )}
           {(user?.testCredits || 0) > 0 && (
-            <button className="btn btn-secondary" onClick={() => onNavigate && onNavigate('tests')} style={{ borderColor: '#e68161', color: '#e68161' }}>
+            <button className="btn btn-secondary" onClick={() => onNavigate && onNavigate('tests')} style={{ borderColor: '#b5833d', color: '#b5833d' }}>
               <i className="fas fa-clipboard-check" style={{ marginRight: 'var(--space-8)' }}></i>
               Take Assessment
             </button>

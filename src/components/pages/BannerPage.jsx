@@ -12,9 +12,6 @@ import {
 import { API_BASE_URL } from '../../utils/config';
 import { fetchLatestArticles } from '../../utils/articleHelpers';
 
-// 👇 1. Image ko yahan import karo (Apne folder path ke hisaab se '../assets/pizza.jpg' bhi ho sakta hai)
-
-
 // ==================== PERFORMANCE OPTIMIZATIONS ====================
 // Lazy load heavy Spline 3D component - only loads when needed
 const Spline = lazy(() => import('@splinetool/react-spline'));
@@ -25,31 +22,20 @@ const useDevicePerformance = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   
   useEffect(() => {
-    // Check for reduced motion preference
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(motionQuery.matches);
     
     const handleMotionChange = (e) => setPrefersReducedMotion(e.matches);
     motionQuery.addEventListener('change', handleMotionChange);
     
-    // Detect low-end device based on multiple factors
     const detectLowEndDevice = () => {
-      // Check device memory (if available)
-      const memory = navigator.deviceMemory || 8; // Default to 8GB if not available
-      
-      // Check hardware concurrency (CPU cores)
+      const memory = navigator.deviceMemory || 8; 
       const cores = navigator.hardwareConcurrency || 4;
-      
-      // Check connection type
       const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       const slowConnection = connection && (connection.saveData || connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g');
-      
-      // Check for mobile device
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      // Consider low-end if: memory <= 4GB OR cores <= 2 OR slow connection OR mobile with low memory
       const isLow = memory <= 4 || cores <= 2 || slowConnection || (isMobile && memory <= 6);
-      
       setIsLowEnd(isLow);
     };
     
@@ -92,7 +78,6 @@ const useInView = (options = {}) => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          // Once in view, stop observing to prevent re-triggers
           if (options.once !== false) {
             observer.unobserve(element);
           }
@@ -110,7 +95,6 @@ const useInView = (options = {}) => {
   return [ref, isInView];
 };
 
-// Spline fallback component for when 3D is loading or disabled
 const SplineFallback = memo(() => (
   <div style={{
     position: 'absolute',
@@ -131,13 +115,11 @@ const SplineFallback = memo(() => (
   </div>
 ));
 
-// Lazy Spline wrapper - only renders 3D on capable devices
 const LazySpline = memo(({ shouldReduceAnimations }) => {
   const [splineRef, isInView] = useInView({ threshold: 0.1 });
   const [hasLoaded, setHasLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
   
-  // Don't load Spline on low-end devices
   if (shouldReduceAnimations || loadError) {
     return <SplineFallback />;
   }
@@ -248,7 +230,6 @@ const CAREER_LABELS_FULL = [
   'Engineering', 'Public Service', 'Toy Designer', 'Instructional Designer',
 ];
 
-// Mobile subset — minimal labels for clean phone experience
 const CAREER_LABELS_MOBILE = [
   'Data Scientist', 'Prompt Engineer', 'ML Scientist', 'AI Ethicist',
   'Cybersecurity', 'Ethical Hacker', 'Robotics Engineer', 'Cloud Security',
@@ -275,7 +256,6 @@ const CAREER_LABELS_MOBILE = [
   'Surgeon', 'Pediatrician', 'Cardiologist', 'Dermatologist',
 ];
 
-// Floating career labels canvas — dense on desktop, sparse on mobile
 const CareerNetworkCanvas = memo(({ shouldReduceAnimations }) => {
   const canvasRef = useRef(null);
   const nodesRef = useRef([]);
@@ -365,17 +345,14 @@ const CareerNetworkCanvas = memo(({ shouldReduceAnimations }) => {
   return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />;
 });
 
-// Optimized motion wrapper that respects reduced motion
 const OptimizedMotion = memo(({ children, shouldReduceAnimations, ...props }) => {
   if (shouldReduceAnimations) {
-    // Return static div without animations
     const { initial, animate, exit, whileHover, whileTap, whileInView, transition, variants, ...restProps } = props;
     return <div {...restProps}>{children}</div>;
   }
   return <motion.div {...props}>{children}</motion.div>;
 });
 
-// Image component with lazy loading
 const LazyImage = memo(({ src, alt, style, ...props }) => {
   const [imgRef, isInView] = useInView({ rootMargin: '100px' });
   const [loaded, setLoaded] = useState(false);
@@ -411,25 +388,21 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
   );
 });
 
-
-// --- INJECTED GLOBAL STYLES & RESPONSIVE UTILITIES ---
  export const GlobalStyles = memo(() => (
   <style>{`
     :root {
-      /* --- PALETTE DEFINITIONS --- */
       --frozen-water: #bee9e8;
       --pacific-blue: #62b6cb;
       --yale-blue: #1b4965;
       --pale-sky: #cae9ff;
       --fresh-sky: #5fa8d3;
 
-      /* --- FUNCTIONAL MAPPINGS --- */
       --color-primary: var(--yale-blue);      
       --color-primary-light: var(--fresh-sky); 
       --color-accent: var(--pacific-blue);     
       
       --color-text-main: var(--yale-blue);
-      --color-text-muted: #4a7a96;             
+      --color-text-muted: #4a7a96;            
       
       --color-border: var(--frozen-water);
       --font-family-base: 'Inter', sans-serif;
@@ -449,7 +422,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
     
     .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
     
-    /* Typography Responsive Scaling */
     .text-huge { 
       font-size: clamp(2.5rem, 6vw, 4rem); 
       font-weight: 800; 
@@ -468,18 +440,15 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       margin-bottom: 1rem; 
     }
     
-    /* Buttons */
     .btn { display: inline-flex; align-items: center; justify-content: center; font-weight: 600; transition: all 0.2s; cursor: pointer; border: none; }
     .btn-primary { background: var(--color-primary); color: white; }
     .btn-primary:hover { background: var(--color-primary-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(95, 168, 211, 0.4); }
     .btn-sm { padding: 8px 16px; font-size: 0.875rem; }
     .rounded-full { border-radius: 9999px; }
 
-    /* Navbar Helpers */
     .navbar-menu a { text-decoration: none; color: var(--color-text-muted); font-weight: 500; transition: color 0.2s; }
     .navbar-menu a:hover { color: var(--color-primary); }
     
-    /* Responsive Helpers */
     .hidden { display: none; }
     .block { display: block; }
     
@@ -488,7 +457,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       .lg\\:hidden { display: none; }
     }
 
-    /* Grid System */
     .grid { display: grid; }
     .grid-cols-1 { grid-template-columns: 1fr; }
     
@@ -500,7 +468,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
 
     .gap-4 { gap: 1rem; } .gap-6 { gap: 1.5rem; } .gap-8 { gap: 2rem; } .gap-12 { gap: 3rem; } 
 
-    /* Form Inputs */
     .input-field, .hero-input {
       width: 100%;
       padding: 12px 16px;
@@ -529,7 +496,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block;
     }
 
-    /* --- PERFORMANCE OPTIMIZATIONS --- */
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 0.3; }
       50% { transform: scale(1.05); opacity: 0.5; }
@@ -540,14 +506,12 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       50%, 100% { transform: translateX(100%); }
     }
     
-    /* GPU acceleration for animated elements */
     .gpu-accelerated {
       transform: translateZ(0);
       will-change: transform, opacity;
       backface-visibility: hidden;
     }
     
-    /* Smooth compositing for all motion elements */
     [style*="position: sticky"],
     [style*="position: fixed"] {
       transform: translateZ(0);
@@ -555,7 +519,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       -webkit-backface-visibility: hidden;
     }
     
-    /* Ensure smooth rendering of animated sections */
     .sticky-viewport,
     .sticky-wrapper {
       transform: translateZ(0);
@@ -564,7 +527,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       will-change: auto;
     }
     
-    /* Smooth AnimatePresence transitions */
     .section-padding > div,
     .hero-grid > div {
       transform: translateZ(0);
@@ -572,7 +534,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       -webkit-backface-visibility: hidden;
     }
     
-    /* Reduce motion for users who prefer it */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -582,7 +543,6 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       html { scroll-behavior: auto; }
     }
 
-    /* --- MOBILE OPTIMIZATIONS --- */
     .section-padding { padding: 8rem 0; }
     .hero-grid { grid-template-columns: 1.2fr 0.8fr; gap: 80px; }
     .sticky-wrapper { height: 500vh; }
@@ -593,12 +553,10 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
       .hero-grid { grid-template-columns: 1fr; gap: 40px; }
       .section-padding { padding: 4rem 0; }
       
-      /* Disable sticky scroll effects on mobile for better UX */
       .sticky-wrapper, .sticky-process-wrapper { height: auto !important; }
       .sticky-viewport { position: relative !important; height: auto !important; overflow: visible !important; }
       .mobile-stack-cards { display: flex; flexDirection: column; gap: 2rem; }
       
-      /* Mobile Menu Styles */
       .mobile-menu-overlay {
         position: fixed; inset: 0; background: rgba(27, 73, 101, 0.95);
         backdrop-filter: blur(10px); z-index: 999;
@@ -612,12 +570,10 @@ const LazyImage = memo(({ src, alt, style, ...props }) => {
   `}</style>
 ));
 
-// ✅ UPDATED NAVBAR - Optimized with throttled scroll
 export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Throttled scroll handler for better performance
   const handleScroll = useCallback((scrollY) => {
     setScrolled(scrollY > 20);
   }, []);
@@ -642,7 +598,6 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
 
   const NavContent = (
     <>
-      {/* ✅ Logo with Home Link */}
       <div 
         onClick={() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -654,7 +609,6 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
         <span style={{ fontWeight: '900', fontSize: '1.35rem', letterSpacing: '-0.02em', color: 'var(--yale-blue)' }}>MYAAROHAN</span>
       </div>
       
-      {/* ✅ UPDATED Desktop Links */}
       <div className="navbar-menu hidden lg:flex" style={{ gap: '32px', alignItems: 'center' }}>
         {[
           { label: 'Why Us', href: '#features' },
@@ -679,14 +633,13 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
           ))}
         </div>
 
-        {/* Desktop Login */}
         <div className="hidden lg:flex" style={{ gap: '16px', alignItems: 'center' }}>
           <button 
             onClick={() => onNavigate('counselor-login')} 
             style={{ 
               background: 'rgba(255,255,255,0.5)', border: '1px solid var(--frozen-water)', 
               cursor: 'pointer', color: 'var(--yale-blue)', fontWeight: '700', fontSize: '0.9rem',
-              padding: '8px 16px', borderRadius: '8px', transition: 'all 0.2s'
+              padding: '8px 16px', borderRadius: '9999px', transition: 'all 0.2s' // Updated border radius
             }}
           >
             Counselor Login
@@ -696,14 +649,12 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
           </button>
         </div>
 
-        {/* Mobile Menu Toggle */}
         <button className="lg:hidden" onClick={toggleMenu} style={{ background: 'none', border: 'none', color: 'var(--yale-blue)', padding: '4px' }}>
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
     </>
   );
 
-  // Use optimized motion or static header based on device capability
   return (
     <>
       {shouldReduceAnimations ? (
@@ -719,7 +670,6 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
         </motion.header>
       )}
 
-      {/* ✅ UPDATED Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
@@ -734,7 +684,7 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
             <a href="#about" className="mobile-menu-link" onClick={closeMenu}>About</a>
             <a href="#testimonials" className="mobile-menu-link" onClick={closeMenu}>Stories</a>
             <div style={{ width: '60px', height: '2px', background: 'rgba(255,255,255,0.2)', margin: '10px 0' }} />
-            <button onClick={() => { closeMenu(); onNavigate('counselor-login'); }} className="mobile-menu-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.8 }}>Counselor Login</button>
+            <button onClick={() => { closeMenu(); onNavigate('counselor-login'); }} className="mobile-menu-link" style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '12px 32px', borderRadius: '9999px', cursor: 'pointer', fontSize: '1.1rem', opacity: 0.9 }}>Counselor Login</button>
             <button onClick={() => { closeMenu(); onNavigate('student-login'); }} className="btn btn-primary rounded-full" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>Student Login</button>
             
             <button onClick={closeMenu} style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', color: 'white' }}>
@@ -747,24 +697,15 @@ export const Navbar = memo(({ onNavigate, shouldReduceAnimations }) => {
   );
 });
 
-// ✅ UPDATED HERO SECTION - Optimized with lazy Spline
 const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
-  // Data Pipeline State (Unchanged structure for backend compatibility)
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    school: '',
-    standard: '',
-    phone: '',
-    email: '',
-    dateOfBirth: '',
-    age: '' // Logic still populates this, but it's hidden from UI
+    firstName: '', lastName: '', middleName: '',
+    school: '', standard: '', phone: '', email: '',
+    dateOfBirth: '', age: '' 
   });
 
-  // Local UI State
   const [dobParts, setDobParts] = useState({ day: '', month: '', year: '' });
-  const [isSubscribed, setIsSubscribed] = useState(true); // New state for checkbox
+  const [isSubscribed, setIsSubscribed] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showMobileForm, setShowMobileForm] = useState(false);
@@ -777,14 +718,12 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Auto-open mobile form popup after 2.5s
   useEffect(() => {
     if (!isMobile) return;
     const timer = setTimeout(() => setShowMobileForm(true), 2500);
     return () => clearTimeout(timer);
   }, [isMobile]);
 
-  // Dropdown Options
   const STANDARDS = ["5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th"];
 
   const calculateAge = useCallback((dobStr) => {
@@ -799,17 +738,15 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   }, []);
 
   const handleDobChange = useCallback((part, value) => {
-    // 1. Clean non-numeric characters
     const cleanValue = value.replace(/\D/g, '');
 
-    // 2. Immediate Input Restrictions (Standard Date/Month Limits)
     if (part === 'day') {
       if (cleanValue.length > 2) return;
-      if (parseInt(cleanValue) > 31) return; // Prevent typing > 31
+      if (parseInt(cleanValue) > 31) return;
     }
     if (part === 'month') {
       if (cleanValue.length > 2) return;
-      if (parseInt(cleanValue) > 12) return; // Prevent typing > 12
+      if (parseInt(cleanValue) > 12) return;
     }
     if (part === 'year') {
       if (cleanValue.length > 4) return;
@@ -819,7 +756,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
     const newParts = { ...dobParts, [part]: cleanValue };
     setDobParts(newParts);
 
-    // 3. Full Validation (Triggered only when we have a full date)
     if (newParts.day && newParts.month && newParts.year.length === 4) {
       const dayStr = newParts.day.padStart(2, '0');
       const monthStr = newParts.month.padStart(2, '0');
@@ -831,21 +767,15 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
       const today = new Date();
       const currentYear = today.getFullYear();
 
-      // CHECK A: Is it a valid calendar date? (Handles Feb 30th, etc.)
       const isRealDate = !Number.isNaN(dateObj.getTime()) && 
                           dateObj.getDate() === parseInt(dayStr) &&
                           dateObj.getMonth() + 1 === parseInt(monthStr);
 
-      // CHECK B: Is it in the future? (Date Object comparison)
-      // We set hours to 0 to ensure we only compare the date part
       today.setHours(0,0,0,0);
       const isNotFuture = dateObj <= today;
-
-      // CHECK C: Is it within the past 50 years?
       const isWithin50Years = yearInt >= (currentYear - 50);
 
       if (isRealDate && isNotFuture && isWithin50Years) {
-        // Valid Date - Update Global State
         setFormData(prev => ({ 
           ...prev, 
           dateOfBirth: isoDate, 
@@ -853,15 +783,9 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
         }));
         if (error) setError('');
       } else {
-        // Invalid Date - Clear Global State (but keep inputs so user can fix)
         setFormData(prev => ({ ...prev, dateOfBirth: '', age: '' }));
-        
-        // Optional: You could set specific errors here if you wanted specific feedback
-        // if (!isNotFuture) setError("Date cannot be in the future");
-        // else if (!isWithin50Years) setError("Date is too far in the past");
       }
     } else if (formData.dateOfBirth) {
-      // Clear global state if user deletes a character making the date incomplete
       setFormData(prev => ({ ...prev, dateOfBirth: '', age: '' }));
     }
   }, [dobParts, formData.dateOfBirth, error]);
@@ -903,11 +827,8 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
 
     try {
       const apiBase = window.APIBASEURL || "http://localhost:5000/";
-
-      // This line removes the trailing slash if it exists
       const base = apiBase.endsWith("/") ? apiBase.slice(0, -1) : apiBase;
 
-      // FIX: Added a '/' before students
       const response = await fetch(`${base}/students/register-step1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -943,7 +864,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   return (
     <section style={{ minHeight: '100vh', position: 'relative', display: 'flex', alignItems: 'center', background: 'linear-gradient(180deg, #ffffff 0%, var(--pale-sky) 100%)', paddingTop: '100px', paddingBottom: '60px', overflow: 'hidden' }}>
       
-      {/* Floating Career Network Background */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <CareerNetworkCanvas shouldReduceAnimations={shouldReduceAnimations} />
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.15) 80%)' }} />
@@ -981,7 +901,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
               Your trusted partner, guiding and mentoring you at every step of the journey
             </p>
 
-            {/* Career Encyclopedia CTA */}
             <motion.button
               onClick={() => onNavigate('/career-explorer')}
               whileHover={{ scale: 1.04, boxShadow: '0 8px 32px rgba(27, 73, 101, 0.45)' }}
@@ -1017,7 +936,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
               <ArrowRight size={18} strokeWidth={2.5} style={{ position: 'relative', zIndex: 1 }} />
             </motion.button>
 
-            {/* Mobile-only CTA to open form popup */}
             {isMobile && (
               <motion.button
                 onClick={() => setShowMobileForm(true)}
@@ -1046,7 +964,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
             )}
           </OptimizedMotion>
 
-          {/* Desktop: inline form | Mobile: hidden here, shown as popup */}
           {!isMobile && (
           <OptimizedMotion 
             shouldReduceAnimations={shouldReduceAnimations}
@@ -1088,7 +1005,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
                 <input className="hero-input" name="middleName" type="text" placeholder="Optional" value={formData.middleName} onChange={handleChange} autoComplete="additional-name" />
               </div>
 
-              {/* Date Section - Full Width, Age is Hidden but Calculated */}
               <div>
                 <label className="form-label">Date of Birth</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.5fr', gap: '8px' }}>
@@ -1154,7 +1070,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
                 <input className="hero-input" name="email" type="email" placeholder="john@example.com" required value={formData.email} onChange={handleChange} autoComplete="email" />
               </div>
 
-              {/* Interactive Checkbox */}
               <div 
                 onClick={() => setIsSubscribed(!isSubscribed)}
                 style={{ display: 'flex', gap: '12px', marginTop: '10px', alignItems: 'flex-start', cursor: 'pointer' }}
@@ -1188,7 +1103,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
         </div>
       </div>
 
-      {/* Mobile Form Popup */}
       <AnimatePresence>
         {isMobile && showMobileForm && (
           <motion.div
@@ -1226,10 +1140,8 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
                 position: 'relative',
               }}
             >
-              {/* Drag handle */}
               <div style={{ width: '40px', height: '4px', borderRadius: '2px', background: '#cbd5e1', margin: '0 auto 20px' }} />
 
-              {/* Close button */}
               <button
                 onClick={() => setShowMobileForm(false)}
                 style={{
@@ -1333,7 +1245,6 @@ const HeroSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   );
 });
 
-// --- Features Section (Layout Updated to Match Wireframe) - Memoized ---
 const FeaturesSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   const cards = [
     {
@@ -1382,7 +1293,6 @@ const FeaturesSection = memo(({ onNavigate, shouldReduceAnimations }) => {
     <section id="features" className="section-padding" style={{ background: '#fff' }}>
       <div className="container">
         
-        {/* 1. Header Text Section */}
         <div style={{ textAlign: 'center', marginBottom: '4rem', maxWidth: '800px', margin: '0 auto 4rem auto' }}>
           <span className="text-label">The 'secret sauce' revealed</span>
           
@@ -1390,20 +1300,17 @@ const FeaturesSection = memo(({ onNavigate, shouldReduceAnimations }) => {
             Sneak Peek at Your Experience
           </h2>
           
-          {/* Subtext updated to match wireframe */}
           <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)', lineHeight: 1.6, maxWidth: '700px', margin: '0 auto' }}>
             We didn’t just build another course or career platform; we built a career-launching machine. Just the tools you need to win.
           </p>
         </div>
 
-        {/* 2. Cards Grid */}
         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '32px', marginBottom: '48px' }}>
           {cards.map((card) => (
-            <FeatureCard key={card.id} card={card} />
+            <FeatureCard key={card.id} card={card} shouldReduceAnimations={shouldReduceAnimations} />
           ))}
         </div>
 
-        {/* 3. Button Moved to Bottom (As per Wireframe) */}
         <div style={{ textAlign: 'center' }}>
           <motion.button 
             whileHover={{ scale: 1.05 }}
@@ -1447,7 +1354,6 @@ const FeatureCard = memo(({ card, shouldReduceAnimations }) => {
         backfaceVisibility: 'hidden'
       }}
     >
-      {/* FRONT FACE */}
       <motion.div
         variants={{ rest: { opacity: 1, y: 0 }, hover: { opacity: 0, y: -10 } }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -1459,7 +1365,6 @@ const FeatureCard = memo(({ card, shouldReduceAnimations }) => {
           zIndex: 1 
         }}
       >
-        {/* Icon/Image Box */}
         <div style={{ 
           width: '200px', 
           height: '200px', 
@@ -1469,19 +1374,17 @@ const FeatureCard = memo(({ card, shouldReduceAnimations }) => {
           boxShadow: '0 20px 40px rgba(27, 73, 101, 0.15), inset 0 0 0 1px rgba(255,255,255,0.5)', 
           marginBottom: '32px', 
           color: card.color,
-          overflow: 'hidden' // ✅ CRITICAL: This clips the image to the rounded corners
+          overflow: 'hidden' 
         }}>
-          {/* Wrapper: Removed padding here so image fills the box */}
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {!imageError && card.imgUrl ? (
               <img 
                 src={card.imgUrl} 
                 alt={card.title}
                 onError={() => setImageError(true)}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} // ✅ Fills the space
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
               />
             ) : (
-              // Make icon bigger since the box is bigger
               React.cloneElement(card.icon, { size: 64 }) 
             )}
           </div>
@@ -1489,7 +1392,6 @@ const FeatureCard = memo(({ card, shouldReduceAnimations }) => {
         <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--yale-blue)' }}>{card.title}</h3>
       </motion.div>
 
-      {/* BACK FACE (Hover) */}
       <motion.div
         variants={{ rest: { opacity: 0, y: 10 }, hover: { opacity: 1, y: 0 } }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -1503,7 +1405,6 @@ const FeatureCard = memo(({ card, shouldReduceAnimations }) => {
   );
 });
 
-// --- PERKS SECTION - Optimized with throttled scroll ---
 const PerksSection = memo(({ shouldReduceAnimations }) => {
   const containerRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -1516,13 +1417,11 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Use useScroll only on desktop with capable devices
   const { scrollYProgress } = useScroll({ 
     target: containerRef, 
     offset: ["start start", "end end"] 
   });
 
-  // ✅ MERGED DATA: Combines "New Perks" (Top) with "Old Process" (Bottom)
   const features = useMemo(() => [
     { 
       id: 0, 
@@ -1566,13 +1465,11 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
     }
   ], []);
 
-  // Throttled scroll handler for better performance
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const index = Math.min(features.length - 1, Math.floor(latest * features.length));
     if (index !== activeSlide) setActiveSlide(index);
   });
 
-  // --- MOBILE VIEW or Low-end devices - Simple static cards ---
   if (isMobile || shouldReduceAnimations) {
     return (
       <div className="section-padding" style={{ background: '#f8fafc' }}>
@@ -1585,16 +1482,13 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
              <div key={i} style={{ borderRadius: '24px', overflow: 'hidden', background: 'white', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
                 <div style={{ height: '200px', backgroundImage: `url(${feature.img})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div style={{ padding: '24px' }}>
-                   {/* Top Section */}
                    <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: feature.color, display: 'flex', alignItems: 'center', gap: '10px' }}>
                      {feature.icon} {feature.title}
                    </h3>
                    <p style={{ color: '#4a7a96', lineHeight: 1.6, marginBottom: '20px' }}>{feature.desc}</p>
                    
-                   {/* Divider */}
                    <div style={{ height: '1px', background: '#e2e8f0', margin: '0 0 20px 0' }}></div>
                    
-                   {/* Bottom Section */}
                    <h4 style={{ fontSize: '1.1rem', color: '#64748b', marginBottom: '4px' }}>{feature.processDesc}</h4>
                 </div>
              </div>
@@ -1604,14 +1498,12 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
     )
   }
 
-  // --- DESKTOP VIEW (Sticky) ---
   return (
     <div ref={containerRef} className="sticky-wrapper" style={{ position: 'relative', height: '400vh' }}>
       <div className="sticky-viewport" style={{ background: '#f8fafc', position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', transform: 'translateZ(0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
         
         <div className="container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
           
-          {/* Header Section */}
           <div style={{ textAlign: 'center', marginBottom: '3rem', flexShrink: 0 }}>
             <span className="text-label">Your Journey</span>
             <h2 className="text-huge" style={{ marginBottom: 0 }}>HOW IT WORKS</h2>
@@ -1619,7 +1511,6 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', width: '100%' }}>
             
-            {/* Left: Text Content */}
             <div>
               <AnimatePresence mode='wait'>
                 <motion.div 
@@ -1630,7 +1521,6 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
                   transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                   style={{ willChange: 'transform, opacity', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                 >
-                  {/* Step Badge */}
                   <div style={{ 
                     display: 'inline-flex', alignItems: 'center', gap: '12px', 
                     padding: '8px 16px', background: `${features[activeSlide].color}15`, 
@@ -1639,7 +1529,6 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
                     {features[activeSlide].icon} STEP 0{activeSlide + 1}
                   </div>
 
-                  {/* === NEW TEXT (ABOVE LINE) === */}
                   <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: 'var(--yale-blue)', marginBottom: '16px', lineHeight: 1.1 }}>
                     {features[activeSlide].title}
                   </h2>
@@ -1647,7 +1536,6 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
                     {features[activeSlide].desc}
                   </p>
 
-                  {/* === THE LINE (Animated Bar) === */}
                   <div style={{ marginTop: '32px', marginBottom: '32px', height: '4px', width: '100%', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
                     <motion.div 
                       initial={{ width: 0 }}
@@ -1657,7 +1545,6 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
                     />
                   </div>
 
-                  {/* === OLD TEXT (BELOW LINE) === */}
                   <div>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#64748b', marginBottom: '8px' }}>
                         {features[activeSlide].processDesc}
@@ -1668,7 +1555,6 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
               </AnimatePresence>
             </div>
 
-            {/* Right: Image Card */}
             <div style={{ position: 'relative', height: '500px', width: '100%' }}>
               <AnimatePresence mode='wait'>
                 <motion.div
@@ -1703,150 +1589,7 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
   );
 });
 
-
-// ✅ NEW: Glassmorphic Modal Component - Memoized
-const ProgramModal = memo(({ program, onClose, onNavigate }) => {
-  if (!program) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '20px',
-        background: 'rgba(27, 73, 101, 0.4)', // Darkened overlay
-        backdropFilter: 'blur(8px)'
-      }}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        style={{
-          width: '100%', maxWidth: '900px',
-          background: 'rgba(255, 255, 255, 0.85)', // Glass effect
-          backdropFilter: 'blur(24px)',
-          borderRadius: '32px',
-          border: '1px solid rgba(255, 255, 255, 0.8)',
-          boxShadow: '0 25px 50px -12px rgba(27, 73, 101, 0.25), inset 0 0 0 1px rgba(255,255,255,0.2)',
-          padding: '40px',
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          maxHeight: '90vh',
-          overflowY: 'auto'
-        }}
-      >
-        {/* Close Button */}
-        <button 
-          onClick={onClose}
-          style={{
-            position: 'absolute', top: '24px', right: '24px',
-            background: 'rgba(255,255,255,0.5)', border: 'none',
-            width: '40px', height: '40px', borderRadius: '50%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'var(--yale-blue)',
-            transition: 'all 0.2s'
-          }}
-          onMouseOver={(e) => e.currentTarget.style.background = 'white'}
-          onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.5)'}
-        >
-          <X size={24} />
-        </button>
-
-        {/* Modal Header */}
-        <h2 style={{ 
-          fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', 
-          fontWeight: 800, 
-          color: 'var(--yale-blue)', 
-          marginBottom: '32px',
-          textAlign: 'center',
-          lineHeight: 1.2
-        }}>
-          {program.title}
-        </h2>
-
-        {/* Modal Grid */}
-        <div className="grid md:grid-cols-2 gap-8" style={{ alignItems: 'center' }}>
-          
-          {/* Left: Image */}
-          <div style={{ 
-            borderRadius: '24px', 
-            overflow: 'hidden', 
-            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)',
-            background: 'white',
-            padding: '10px' // White frame around image
-          }}>
-            <div style={{ borderRadius: '16px', overflow: 'hidden', aspectRatio: '1/1' }}>
-              <img 
-                src={program.imgUrl} 
-                alt={program.title} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-              />
-            </div>
-          </div>
-
-          {/* Right: Details */}
-          <div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--yale-blue)', marginBottom: '16px' }}>
-              Program Details
-            </h3>
-            
-            <ul style={{ paddingLeft: '20px', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {program.features.map((feature, idx) => (
-                <li key={idx} style={{ color: 'var(--yale-blue)', fontSize: '1rem', lineHeight: 1.5, fontWeight: 500 }}>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-
-            <p style={{ color: '#4a7a96', lineHeight: 1.6, fontSize: '1rem', marginBottom: '32px' }}>
-              {program.fullDesc}
-            </p>
-
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              <button 
-                className="btn btn-primary rounded-full" 
-                style={{ padding: '12px 32px', fontSize: '1rem' }}
-                onClick={() => {
-                  onClose();
-                  if (onNavigate) onNavigate('student-register?enroll=1');
-                }}
-              >
-                Enroll Now
-              </button>
-              <button 
-                className="btn rounded-full" 
-                style={{ 
-                  padding: '12px 24px', 
-                  fontSize: '1rem', 
-                  background: 'transparent', 
-                  color: 'var(--fresh-sky)', 
-                  border: '2px solid var(--fresh-sky)' 
-                }}
-                onClick={() => {
-                  onClose();
-                  if (onNavigate) onNavigate('pricing');
-                }}
-              >
-                Our Offering <ChevronRight size={18} style={{ marginLeft: '4px' }} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-});
-
-// ✅ Program Flip Card Component - recreated from flash.html design
+// ✅ Program Flip Card Component 
 const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -1906,7 +1649,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               {card.title}
             </h3>
             <span style={{
-              backgroundColor: '#FFB347',
+              backgroundColor: 'var(--pacific-blue)', 
               color: '#FFFFFF',
               fontSize: '13px',
               fontWeight: 700,
@@ -1914,7 +1657,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               borderRadius: '50px',
               display: 'inline-block',
               textTransform: 'uppercase',
-              boxShadow: '0 2px 8px rgba(255, 179, 71, 0.3)'
+              boxShadow: '0 2px 8px rgba(98, 182, 203, 0.3)'
             }}>
               {card.badge}
             </span>
@@ -1973,27 +1716,27 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
           padding: '35px 25px',
           boxSizing: 'border-box',
           border: '1px solid rgba(0,0,0,0.03)',
-          background: 'linear-gradient(180deg, #E7D7B0 0%, #FFFFFF 100%)',
+          background: 'linear-gradient(135deg, var(--yale-blue) 0%, var(--fresh-sky) 100%)',
           transform: 'rotateY(180deg)'
         }}>
           <h4 style={{
             fontSize: '16px',
             fontWeight: 800,
             textTransform: 'uppercase',
-            color: '#2D3E50',
+            color: '#FFFFFF',
             margin: '10px 0 12px 0'
           }}>
             The Objective
           </h4>
 
           <div style={{
-            backgroundColor: '#4A7C82',
+            backgroundColor: 'rgba(255,255,255,0.15)',
             color: '#FFFFFF',
             padding: '18px',
             borderRadius: '12px',
             fontSize: '13.5px',
             lineHeight: 1.5,
-            fontWeight: 500,
+            fontWeight: 600,
             marginBottom: '20px',
             textAlign: 'center',
             width: '100%'
@@ -2005,7 +1748,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
             fontSize: '16px',
             fontWeight: 800,
             textTransform: 'uppercase',
-            color: '#2D3E50',
+            color: '#FFFFFF',
             margin: '10px 0 12px 0'
           }}>
             Key Features
@@ -2023,16 +1766,16 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
-                background: 'rgba(255,255,255,0.4)',
+                background: 'rgba(255,255,255,0.15)',
                 padding: '8px 10px',
-                borderRadius: '10px'
+                borderRadius: '8px' 
               }}>
                 <span style={{ fontSize: '20px' }}>{feature.icon}</span>
                 <p style={{
                   fontSize: '12px',
                   lineHeight: 1.4,
                   fontWeight: 600,
-                  color: '#2D3E50',
+                  color: '#FFFFFF',
                   margin: 0
                 }}>
                   {feature.text}
@@ -2056,14 +1799,14 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               }}
               style={{
                 padding: '10px 24px',
-                background: 'var(--yale-blue, #1b4965)',
-                color: 'white',
+                background: '#FFFFFF',
+                color: 'var(--yale-blue)',
                 border: 'none',
-                borderRadius: '50px',
+                borderRadius: '9999px', // Pill Shape matched to Student Login
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(27, 73, 101, 0.3)',
+                boxShadow: '0 4px 12px rgba(255, 255, 255, 0.2)',
                 transition: 'all 0.2s'
               }}
             >
@@ -2077,9 +1820,9 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               style={{
                 padding: '10px 24px',
                 background: 'transparent',
-                color: 'var(--fresh-sky, #5fa8d3)',
-                border: '2px solid var(--fresh-sky, #5fa8d3)',
-                borderRadius: '50px',
+                color: '#FFFFFF',
+                border: '2px solid #FFFFFF',
+                borderRadius: '9999px', // Updated shape
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 cursor: 'pointer',
@@ -2095,7 +1838,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
   );
 });
 
-// ✅ UPDATED PROGRAMS SECTION - Flip cards from flash.html design
+// ✅ UPDATED PROGRAMS SECTION
 const ProgramsSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   const programCards = useMemo(() => [
     {
@@ -2103,7 +1846,7 @@ const ProgramsSection = memo(({ onNavigate, shouldReduceAnimations }) => {
       badge: "Grades 1-3",
       image: "/img_cards/card1.webp",
       tagline: "Spark your curiosity and start your journey from the first classroom to big dreams!",
-      objective: "We focus on building the foundational \"learnability\" a child needs to thrive through joyful exploration.",
+      objective: "Building foundational learnability and sparking early curiosity through joyful exploration",
       features: [
         { icon: "🧠", text: "Foundational learnability & cognitive exercises." },
         { icon: "❤️", text: "Playful academic activities to build love for learning." },
@@ -2202,13 +1945,11 @@ const ProgramsSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   );
 });
 
-
-// ✅ UPDATED BLOG SECTION - Memoized with lazy loading
+// ✅ UPDATED BLOG SECTION 
 const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fallback data in case fetch fails or no articles exist yet
   const fallbackBlogs = useMemo(() => [
     { 
       id: 'f1',
@@ -2254,7 +1995,6 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
         if (!indexRes.ok) throw new Error('Failed to load index');
         const fileList = await indexRes.json();
 
-        // Fetch first 4 articles (Since 1 slot is taken by Career Explorer)
         const loaded = await Promise.all(
           fileList.slice(0, 4).map(async (fileName) => {
             const res = await fetch(`/articles/${fileName}`);
@@ -2299,18 +2039,13 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
     <section id="blog" className="section-padding" style={{ background: '#f0f9ff' }}>
       <div className="container">
         
-        {/* Header */}
         <div style={{ marginBottom: '3rem' }}>
           <span className="text-label">Latest Insights</span>
           <h2 className="text-huge" style={{ marginBottom: 0 }}>Knowledge Hub</h2>
         </div>
         
-        {/* Grid Layout */}
         <div className="grid md:grid-cols-3 gap-8">
 
-          {/* =========================================================================
-             Articles
-             ========================================================================= */}
           {displayArticles.map((blog, i) => (
             <motion.div
               key={blog.id || i}
@@ -2359,9 +2094,6 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
             </motion.div>
           ))}
 
-          {/* =========================================================================
-             Card 6: View All
-             ========================================================================= */}
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -2404,7 +2136,6 @@ const BlogSection = memo(({ onNavigate, shouldReduceAnimations }) => {
 });
 
 
-// ✅ UPDATED ABOUT SECTION - Memoized
 const AboutSection = memo(({ shouldReduceAnimations }) => {
   return (
     <section id="about" className="section-padding" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%)', position: 'relative' }}>
@@ -2413,7 +2144,6 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
       <div className="container">
         <div style={{ textAlign: 'center', maxWidth: '1200px', margin: '0 auto 6rem auto', padding: '0 20px' }}>
         
-        {/* --- Header Section --- */}
         <span className="text-label" style={{ display: 'block', marginBottom: '10px', fontWeight: 600, color: 'var(--color-text-muted, #64748b)' }}>
           We are co-pilots, not just counselors
         </span>
@@ -2422,17 +2152,15 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
           <span style={{ color: 'var(--fresh-sky, #0ea5e9)' }}>Not predict it!</span>
         </h2>
 
-        {/* --- Main Content Grid/Flex --- */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'stretch', 
           justifyContent: 'center', 
           gap: '24px', 
-          flexWrap: 'wrap', // Ensures stacking on mobile
+          flexWrap: 'wrap',
           marginTop: '20px' 
         }}>
 
-          {/* --- LEFT COLUMN: The Old Way --- */}
           <div style={{ flex: '1', minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <span style={{ fontWeight: 'bold', color: 'var(--color-text-muted, #94a3b8)', fontSize: '1.5rem' }}>
               😕 "I have no clue"
@@ -2444,7 +2172,7 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
               borderRadius: '24px', 
               border: '1px solid #e2e8f0', 
               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-              height: '100%', // Ensures cards are same height
+              height: '100%', 
               textAlign: 'left'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
@@ -2462,8 +2190,6 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
             </div>
           </div>
 
-          {/* --- MIDDLE: The Bridge / Progress Bar --- */}
-          {/* Hidden on very small screens or adjusted to be a simple spacer */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '40px' }}>
               <div style={{ 
                   width: 'clamp(60px, 10vw, 150px)', 
@@ -2487,7 +2213,6 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
               </div>
           </div>
 
-          {/* --- RIGHT COLUMN: The Aarohan Way --- */}
           <div style={{ flex: '1', minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <span style={{ fontWeight: 'bold', color: 'var(--yale-blue, #1b4965)', fontSize: '1.5rem' }}>
               🚀 "I can't wait to start"
@@ -2503,7 +2228,6 @@ const AboutSection = memo(({ shouldReduceAnimations }) => {
               height: '100%',
               textAlign: 'left'
             }}>
-              {/* Background Effect */}
               <div style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)', pointerEvents: 'none' }}></div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', position: 'relative', zIndex: 2 }}>
@@ -2552,7 +2276,6 @@ const FlipCard = memo(({ title, frontSub, backDesc, icon, shouldReduceAnimations
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', background: 'var(--yale-blue)', color: 'white', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
           <div style={{ color: 'var(--fresh-sky)', marginBottom: '24px' }}>{icon}</div>
           <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '8px' }}>{title}</h3>
-          {/* ✅ WHITE TEXT */}
           <p style={{ color: 'white', fontWeight: 600 }}>{frontSub}</p>
         </div>
         <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', background: 'white', color: 'var(--yale-blue)', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center', border: '2px solid var(--yale-blue)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
@@ -2564,7 +2287,6 @@ const FlipCard = memo(({ title, frontSub, backDesc, icon, shouldReduceAnimations
   );
 });
 
-// --- TESTIMONIALS SECTION - Memoized ---
 const TestimonialsSection = memo(({ shouldReduceAnimations }) => {
   const stories = useMemo(() => [
     { name: "Rohan S.", role: "Class 11 • The Stream Switcher", before: "I was failing Physics and convinced I was 'just bad at studying.' My parents wanted Engineering, but I hated machines.", moment: "The Psychometric test showed I had high Linguistic aptitude. The counselor introduced me to Media Law.", now: "Topping my Humanities class and interning at a legal news blog. I finally love school." },
@@ -2621,11 +2343,8 @@ const TestimonialsSection = memo(({ shouldReduceAnimations }) => {
   );
 });
 
-
-// --- NEW: Layout Wrapper for Info Pages ---
 const InfoPageLayout = memo(({ title, lastUpdated, children, onNavigate }) => (
   <div style={{ background: '#f8fbff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-    {/* Reusing existing GlobalStyles and Navbar */}
     <GlobalStyles />
     <Navbar onNavigate={onNavigate} />
     
@@ -2652,7 +2371,6 @@ const InfoPageLayout = memo(({ title, lastUpdated, children, onNavigate }) => (
           <h1 className="text-huge" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '16px' }}>{title}</h1>
           {lastUpdated && <p style={{ color: 'var(--color-text-muted)', marginBottom: '40px' }}>Last Updated: {lastUpdated}</p>}
           
-          {/* Content Styles */}
           <div style={{ lineHeight: 1.8, fontSize: '1.05rem', color: 'var(--yale-blue)' }}>
             {children}
           </div>
@@ -2663,9 +2381,7 @@ const InfoPageLayout = memo(({ title, lastUpdated, children, onNavigate }) => (
   </div>
 ));
 
-// --- NEW: About Us Page ---
 const AboutUsPage = ({ onNavigate }) => {
-  // State for the interactive "Pulse Check" section
   const [activePulse, setActivePulse] = useState(null);
 
   const pulseBuckets = [
@@ -2688,8 +2404,6 @@ const AboutUsPage = ({ onNavigate }) => {
 
   return (
     <InfoPageLayout title="About Us" onNavigate={onNavigate}>
-      
-      {/* Intro */}
       <p style={{ fontSize: '1.25rem', fontWeight: '500', color: 'var(--yale-blue)', marginBottom: '24px' }}>
         Hey there, future-maker! Welcome to Myaarohan. 🚀
       </p>
@@ -2701,7 +2415,6 @@ const AboutUsPage = ({ onNavigate }) => {
       </ul>
       <p>Here’s a secret from me, Harshit Mall: When I was your age, I didn't have a plan. I had a maze. True, I had a plethora of insights on various domains, since I was lucky enough to have stayed in multiple cities and studied across multiple schools🌀</p>
 
-      {/* Founder Story */}
       <div style={{ marginTop: '48px', padding: '32px', background: 'white', borderRadius: '24px', border: '1px solid var(--frozen-water)' }}>
         <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--yale-blue)', marginBottom: '24px' }}>
           🙋‍♂️ A Story of "Lucky Breaks" and "Big Mistakes"
@@ -2732,7 +2445,6 @@ const AboutUsPage = ({ onNavigate }) => {
         <p>Most students aren't lucky enough to survive three career pivots before finding their passion. Most students get one shot at choosing a stream in Class 10, and if they miss, they’re stuck in a life of "what ifs."</p>
       </div>
 
-      {/* The 15 Trillion Section */}
       <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--yale-blue)', marginTop: '48px', marginBottom: '24px' }}>
         🌏 The $15 Trillion Ticking Clock
       </h3>
@@ -2747,7 +2459,6 @@ const AboutUsPage = ({ onNavigate }) => {
       </div>
       <p>When a student chooses the wrong stream because of "family pressure" or "peer influence," we don't just lose a happy professional; we lose a piece of our nation's future. Myaarohan was born to turn that "Demographic Disaster" into a "Demographic Superpower."</p>
 
-      {/* BFF Section */}
       <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--yale-blue)', marginTop: '48px', marginBottom: '24px' }}>
         🤝 Myaarohan: Your Child’s Career BFF (Best Friend Forever)
       </h3>
@@ -2758,7 +2469,6 @@ const AboutUsPage = ({ onNavigate }) => {
         <li><strong>Speaks the Truth:</strong> Not just "Engineering or Medicine," but introducing you to 500+ careers like Toy Designer, AI Ethicist, or Renewable Energy Specialist.</li>
       </ul>
 
-      {/* Secret Sauce */}
       <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--yale-blue)', marginTop: '48px', marginBottom: '24px' }}>
         🧪 Our Scientific Secret Sauce
       </h3>
@@ -2769,7 +2479,6 @@ const AboutUsPage = ({ onNavigate }) => {
         <li><strong>Psychometrics:</strong> We look deep into how your brain processes information—because a career isn't just a job; it's an ascent.</li>
       </ul>
 
-      {/* The Ascent & Pulse Check */}
       <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--yale-blue)', marginTop: '48px', marginBottom: '24px' }}>
         🚀 The Myaarohan Ascent
       </h3>
@@ -2809,7 +2518,6 @@ const AboutUsPage = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Why We Are Different */}
       <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--yale-blue)', marginTop: '48px', marginBottom: '24px' }}>
         💎 Why We Are Different
       </h3>
@@ -2820,7 +2528,6 @@ const AboutUsPage = ({ onNavigate }) => {
         <li><strong>Trade Secret Assessments:</strong> Our tests aren't found in textbooks. They are proprietary algorithms built to detect the "Digital Premium" skills of the 2030s.</li>
       </ul>
 
-      {/* Outro */}
       <div style={{ marginTop: '48px', padding: '32px', background: 'linear-gradient(135deg, var(--yale-blue), var(--pacific-blue))', borderRadius: '24px', color: 'white' }}>
         <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '16px', color: 'white' }}>🌈 Our Promise to You</h3>
         <p style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '16px' }}>
@@ -2836,7 +2543,6 @@ const AboutUsPage = ({ onNavigate }) => {
   );
 };
 
-// --- NEW: Terms of Service Page ---
 const TermsPage = ({ onNavigate }) => {
   return (
     <InfoPageLayout title="Terms of Service" lastUpdated="January 2026" onNavigate={onNavigate}>
@@ -2924,7 +2630,6 @@ const TermsPage = ({ onNavigate }) => {
   );
 };
 
-// --- NEW: Privacy Policy Page ---
 const PrivacyPage = ({ onNavigate }) => {
   return (
     <InfoPageLayout title="Privacy Policy" lastUpdated="January 01, 2026" onNavigate={onNavigate}>
@@ -3016,7 +2721,6 @@ const PrivacyPage = ({ onNavigate }) => {
   );
 };
 
-// --- NEW: Counselor Agreement Page ---
 const CounselorPage = ({ onNavigate }) => {
   return (
     <InfoPageLayout title="Counselor Professional Services Agreement" lastUpdated="January 1, 2026" onNavigate={onNavigate}>
@@ -3108,15 +2812,13 @@ const CounselorPage = ({ onNavigate }) => {
 };
 
 
-// ✅ UPDATED FOOTER (With Navigation Logic & Tabbed Indentation)
 export const Footer = ({ onNavigate }) => {
-  // Contact form state
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactLoading, setContactLoading] = useState(false);
-  const [contactStatus, setContactStatus] = useState(null); // 'success' | 'error'
+  const [contactStatus, setContactStatus] = useState(null); 
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
@@ -3140,8 +2842,6 @@ export const Footer = ({ onNavigate }) => {
         }),
       });
 
-      // If the server responds at all, consider it a success for UX
-      // (the backend always returns 200 with success:true now)
       if (response.ok) {
         setContactStatus('success');
         setContactName('');
@@ -3150,7 +2850,6 @@ export const Footer = ({ onNavigate }) => {
         setContactMessage('');
         setTimeout(() => setContactStatus(null), 5000);
       } else {
-        // Only show error for actual validation failures (400)
         const data = await response.json().catch(() => ({}));
         if (data.error) {
           console.warn('Contact form validation error:', data.error);
@@ -3158,8 +2857,6 @@ export const Footer = ({ onNavigate }) => {
         setContactStatus('error');
       }
     } catch (err) {
-      // Network error / route not deployed yet — still show success
-      // so the user doesn't get blocked by a backend issue
       console.warn('Contact form network error (endpoint may not be deployed yet):', err.message);
       setContactStatus('success');
       setContactName('');
@@ -3172,18 +2869,14 @@ export const Footer = ({ onNavigate }) => {
     }
   };
   
-  // Helper to handle navigation without page reload
   const handleLinkClick = (e, destination) => {
     e.preventDefault();
     
-    // Check if the destination is an ID (starts with #)
     if (destination.startsWith('#')) {
-      const elementId = destination.substring(1); // Remove the '#'
+      const elementId = destination.substring(1); 
       
-      // If we are not on the home page, switch to 'home' first
       onNavigate('home'); 
       
-      // Wait for home to render, then scroll
       setTimeout(() => {
         const element = document.getElementById(elementId);
         if (element) {
@@ -3194,7 +2887,6 @@ export const Footer = ({ onNavigate }) => {
       }, 100);
       
     } else {
-      // It's a new Page (e.g., 'about', 'privacy') - Scroll to top is correct here
       window.scrollTo(0, 0);
       onNavigate(destination);
     }
@@ -3215,12 +2907,10 @@ export const Footer = ({ onNavigate }) => {
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h4 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fresh-sky)', marginBottom: '1.5rem' }}>Platform</h4>
-                {/* Added paddingLeft for tabbed indentation */}
                 <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: 'var(--frozen-water)' }}>
                   {['For Students', 'For Schools'].map((text, i) => (
                     <li key={i}><a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{text}</a></li>
                   ))}
-                  {/* ✅ Pricing Link -> Redirects to Programs */}
                   <li>
                     <a href="#programs" onClick={(e) => handleLinkClick(e, 'Counselor')} style={{ color: 'inherit', textDecoration: 'none', cursor: 'pointer' }}>Counselor</a>
                   </li>
@@ -3231,9 +2921,7 @@ export const Footer = ({ onNavigate }) => {
               </div>
               <div>
                 <h4 style={{ fontSize: '0.875rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--fresh-sky)', marginBottom: '1.5rem' }}>Company</h4>
-                {/* Added paddingLeft for tabbed indentation */}
                 <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: 'var(--frozen-water)' }}>
-                  {/* ✅ About Us Link */}
                   <li><a href="#" onClick={(e) => handleLinkClick(e, 'about')} style={{ color: 'inherit', textDecoration: 'none' }}>About Us</a></li>
                   <li><a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Careers</a></li>
                   <li><a href="#" onClick={(e) => handleLinkClick(e, '#blog')} style={{ color: 'inherit', textDecoration: 'none' }}>Knowledge Hub</a></li>
@@ -3268,7 +2956,6 @@ export const Footer = ({ onNavigate }) => {
           <div className="md:flex-row" style={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
              <p>&copy; 2025 Aarohan Platform. All rights reserved.</p>
              <div style={{ display: 'flex', gap: '2rem' }}>
-               {/* ✅ Privacy & Terms Links */}
                <a href="#" onClick={(e) => handleLinkClick(e, 'privacy')} style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a>
                <a href="#" onClick={(e) => handleLinkClick(e, 'terms')} style={{ color: 'inherit', textDecoration: 'none' }}>Terms of Service</a>
              </div>
@@ -3279,20 +2966,9 @@ export const Footer = ({ onNavigate }) => {
   );
 };
 
-// --- NEW: Pricing / Our Offering Page ---
-
-// Make sure to import Navbar, Footer, GlobalStyles etc.
-
-// Custom Pizza SVG - Simple line art, no fill colors
-// Custom SVG matching the uploaded pizza slice image style
-// Local Image Component replacing the SVG
-
-// Dummy Pizza Image (Update path as per your project)
-
-
-const PizzaImage = ({ size = 20 }) => (
+const PizzaImage = ({ size = 24 }) => (
   <img
-    src="/pay/pizza.svg" 
+    src="/pay/pizza.png" 
     alt="Pizza Icon"
     style={{
       width: `${size}px`,
@@ -3302,22 +2978,23 @@ const PizzaImage = ({ size = 20 }) => (
     }}
   />
 );
+// Assuming PizzaImage is imported/defined above in your file
 
 const PricingPage = ({ onNavigate }) => {
   const pricingPlans = [
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 499 + GST</span>,
-      tagColor: '#e68161',
+      tagColor: '#b5833d', // Updated color
       icon: <PizzaImage size={80} />, 
       title: '360\u00B0 AI Career Assessment',
       subtitle: '', 
-      // Added (inc GST) in small text
-      price: <>₹ 199 <span style={{ fontSize: '1rem', fontWeight: 500 }}>(inc GST)</span></>,
+      // Added (inc GST)
+      price: <>₹ 199 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       saveBadge: 'Save 60%', 
 
-      borderColor: '#e68161',
-      gradientFrom: 'rgba(230, 129, 97, 0.05)',
-      accentColor: '#e68161',
+      borderColor: '#b5833d', // Updated color
+      gradientFrom: 'rgba(181, 131, 61, 0.05)',
+      accentColor: '#b5833d', // Updated color
       description: 'This entry-level program provides a scientific "mirror" to help students move beyond academic marks and discover their internal Aptitude DNA',
       features: [
         '360\u00B0 Multidimensional Assessment - measure what you can do, who you are, and what you want to do, and how you can achieve what you want',
@@ -3330,17 +3007,17 @@ const PricingPage = ({ onNavigate }) => {
     },
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 1,499 + GST</span>,
-      tagColor: '#2563eb', 
+      tagColor: '#60a8d3', // Updated color
       icon: <PizzaImage size={120} />, 
       title: '360\u00B0 Career Mentorship',
       subtitle: '', 
-      // Added (inc GST) in small text
-      price: <>₹ 749 <span style={{ fontSize: '1rem', fontWeight: 500 }}>(inc GST)</span></>,
+      // Added (inc GST)
+      price: <>₹ 749 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       saveBadge: 'Save 50%', 
 
-      borderColor: '#2563eb', 
-      gradientFrom: 'rgba(37, 99, 235, 0.05)',
-      accentColor: '#2563eb',
+      borderColor: '#60a8d3', // Updated color
+      gradientFrom: 'rgba(96, 168, 211, 0.05)',
+      accentColor: '#60a8d3', // Updated color
       description: 'This program helps students with a "Human Compass or a Sherpa" to decode complex data into an actionable strategy',
       features: [
         'All features of 360\u00B0 AI Career Assessment',
@@ -3353,17 +3030,17 @@ const PricingPage = ({ onNavigate }) => {
     },
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 3,999 + GST</span>,
-      tagColor: '#8b5cf6',
+      tagColor: '#b5833d', // Updated color
       icon: <PizzaImage size={160} />, 
       title: '360\u00B0 Complete Career Discovery',
       subtitle: '',
-      // Added (inc GST) in small text
-      price: <>₹ 1,999 <span style={{ fontSize: '1rem', fontWeight: 500 }}>(inc GST)</span></>,
+      // Added (inc GST)
+      price: <>₹ 1,999 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       saveBadge: 'Save 50%',
 
-      borderColor: '#8b5cf6',
-      gradientFrom: 'rgba(139, 92, 246, 0.06)',
-      accentColor: '#8b5cf6',
+      borderColor: '#b5833d', // Updated color
+      gradientFrom: 'rgba(181, 131, 61, 0.06)',
+      accentColor: '#b5833d', // Updated color
       description: 'The premium tier offers the full "Lifelong Career Mentorship" ecosystem, connecting students with top-tier industry veterans to guide them',
       features: [
         'All features of 360\u00B0 AI Career Assessment',
@@ -3398,7 +3075,7 @@ const PricingPage = ({ onNavigate }) => {
               Our Offering
             </h1>
             <p style={{ color: '#4a7a96', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
-              Choose the plan that best fits your career discovery journey. All plans include access to our expert mentors and scientifically-designed assessments.
+              Choose the plan that best fits your career discovery journey. 
             </p>
           </div>
 
@@ -3467,12 +3144,13 @@ const PricingPage = ({ onNavigate }) => {
                     </div>
                   )}
 
-                  {/* Description - Removed "What you get:" */}
+                  {/* Description ("What you get:") */}
                   <div style={{
                     background: `${plan.accentColor}08`, borderRadius: '12px', padding: '16px', marginBottom: '20px',
-                    minHeight: '130px' 
+                    minHeight: '150px' // Tweak: Increased height a bit to hold larger text securely
                   }}>
-                    <p style={{ margin: 0, fontSize: '0.95rem', color: '#4a7a96', lineHeight: 1.6 }}>
+                    {/* Tweak: Increased fontSize from 0.95rem to 1.1rem */}
+                    <p style={{ margin: 0, fontSize: '1.1rem', color: '#0e2b3c', lineHeight: 1.6, fontWeight: 500 }}>
                       {plan.description}
                     </p>
                   </div>
@@ -3497,7 +3175,7 @@ const PricingPage = ({ onNavigate }) => {
                       boxShadow: `0 4px 12px ${plan.accentColor}40`,
                       transition: 'all 0.2s ease', letterSpacing: '0.3px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                      marginTop: 'auto'
+                      marginTop: 'auto' // Keeps the button perfectly aligned at the bottom
                     }}
                     onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 6px 16px ${plan.accentColor}50`; }}
                     onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 12px ${plan.accentColor}40`; }}
@@ -3531,24 +3209,19 @@ const PricingPage = ({ onNavigate }) => {
 
 
 
-
-// --- Main Page Component (With View Switching & Performance Optimizations) ---
 export function BannerPage({ onNavigate, initialView }) {
   const [currentView, setCurrentView] = useState(initialView || 'home');
   
-  // Performance detection - determines if we should reduce animations
   const { shouldReduceAnimations, isLowEnd } = useDevicePerformance();
 
   useEffect(() => { window.scrollTo(0, 0); }, [currentView]);
 
-  // If the parent passes a navigation event (like from Login), reset to home
   const handleMainNavigate = useCallback((dest) => {
     if (dest === 'home') setCurrentView('home');
     else if (dest === 'pricing') { onNavigate('/pricing'); setCurrentView('pricing'); }
     else onNavigate(dest);
   }, [onNavigate]);
 
-  // Render the correct page based on currentView state
   if (currentView === 'about') return <AboutUsPage onNavigate={setCurrentView} />;
   if (currentView === 'terms') return <TermsPage onNavigate={setCurrentView} />;
   if (currentView === 'privacy') return <PrivacyPage onNavigate={setCurrentView} />;
@@ -3559,7 +3232,6 @@ export function BannerPage({ onNavigate, initialView }) {
     else { setCurrentView(dest); }
   }} />;
 
-  // Default: Render the full Banner Page (Home)
   return (
     <div style={{ background: '#f8fbff', minHeight: '100vh' }}>
       <Helmet>
