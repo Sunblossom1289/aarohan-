@@ -1590,6 +1590,7 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
 });
 
 // ✅ Program Flip Card Component 
+// ✅ Program Flip Card Component - recreated from flash.html design
 const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -1649,7 +1650,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               {card.title}
             </h3>
             <span style={{
-              backgroundColor: 'var(--pacific-blue)', 
+              backgroundColor: '#b5833d', /* ✅ CHANGED: Badge color */
               color: '#FFFFFF',
               fontSize: '13px',
               fontWeight: 700,
@@ -1657,7 +1658,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               borderRadius: '50px',
               display: 'inline-block',
               textTransform: 'uppercase',
-              boxShadow: '0 2px 8px rgba(98, 182, 203, 0.3)'
+              boxShadow: '0 2px 8px rgba(181, 131, 61, 0.3)' /* ✅ Tweaked shadow to match the brown */
             }}>
               {card.badge}
             </span>
@@ -1716,27 +1717,27 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
           padding: '35px 25px',
           boxSizing: 'border-box',
           border: '1px solid rgba(0,0,0,0.03)',
-          background: 'linear-gradient(135deg, var(--yale-blue) 0%, var(--fresh-sky) 100%)',
+          background: 'linear-gradient(180deg, #E7D7B0 0%, #FFFFFF 100%)', /* ✅ CONFIRMED: Back face gradient */
           transform: 'rotateY(180deg)'
         }}>
           <h4 style={{
             fontSize: '16px',
             fontWeight: 800,
             textTransform: 'uppercase',
-            color: '#FFFFFF',
+            color: '#2D3E50',
             margin: '10px 0 12px 0'
           }}>
             The Objective
           </h4>
 
           <div style={{
-            backgroundColor: 'rgba(255,255,255,0.15)',
+            backgroundColor: '#60a8d3', /* ✅ CHANGED: Objective box color */
             color: '#FFFFFF',
             padding: '18px',
             borderRadius: '12px',
             fontSize: '13.5px',
             lineHeight: 1.5,
-            fontWeight: 600,
+            fontWeight: 500,
             marginBottom: '20px',
             textAlign: 'center',
             width: '100%'
@@ -1748,7 +1749,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
             fontSize: '16px',
             fontWeight: 800,
             textTransform: 'uppercase',
-            color: '#FFFFFF',
+            color: '#2D3E50',
             margin: '10px 0 12px 0'
           }}>
             Key Features
@@ -1766,16 +1767,16 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
-                background: 'rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.4)',
                 padding: '8px 10px',
-                borderRadius: '8px' 
+                borderRadius: '10px'
               }}>
                 <span style={{ fontSize: '20px' }}>{feature.icon}</span>
                 <p style={{
                   fontSize: '12px',
                   lineHeight: 1.4,
                   fontWeight: 600,
-                  color: '#FFFFFF',
+                  color: '#2D3E50',
                   margin: 0
                 }}>
                   {feature.text}
@@ -1799,14 +1800,14 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               }}
               style={{
                 padding: '10px 24px',
-                background: '#FFFFFF',
-                color: 'var(--yale-blue)',
+                background: 'var(--yale-blue, #1b4965)',
+                color: 'white',
                 border: 'none',
-                borderRadius: '9999px', // Pill Shape matched to Student Login
+                borderRadius: '50px',
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 4px 12px rgba(27, 73, 101, 0.3)',
                 transition: 'all 0.2s'
               }}
             >
@@ -1820,9 +1821,9 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               style={{
                 padding: '10px 24px',
                 background: 'transparent',
-                color: '#FFFFFF',
-                border: '2px solid #FFFFFF',
-                borderRadius: '9999px', // Updated shape
+                color: 'var(--fresh-sky, #5fa8d3)',
+                border: '2px solid var(--fresh-sky, #5fa8d3)',
+                borderRadius: '50px',
                 fontWeight: 700,
                 fontSize: '0.85rem',
                 cursor: 'pointer',
@@ -2984,17 +2985,16 @@ const PricingPage = ({ onNavigate }) => {
   const pricingPlans = [
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 499 + GST</span>,
-      tagColor: '#b5833d', // Updated color
-      icon: <PizzaImage size={80} />, 
+      tagColor: '#b5833d',
+      icon: <PizzaImage size={80} />, // Smallest pizza
       title: '360\u00B0 AI Career Assessment',
       subtitle: '', 
-      // Added (inc GST)
       price: <>₹ 199 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       saveBadge: 'Save 60%', 
 
-      borderColor: '#b5833d', // Updated color
+      borderColor: '#b5833d', 
       gradientFrom: 'rgba(181, 131, 61, 0.05)',
-      accentColor: '#b5833d', // Updated color
+      accentColor: '#b5833d', 
       description: 'This entry-level program provides a scientific "mirror" to help students move beyond academic marks and discover their internal Aptitude DNA',
       features: [
         '360\u00B0 Multidimensional Assessment - measure what you can do, who you are, and what you want to do, and how you can achieve what you want',
@@ -3007,17 +3007,16 @@ const PricingPage = ({ onNavigate }) => {
     },
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 1,499 + GST</span>,
-      tagColor: '#60a8d3', // Updated color
-      icon: <PizzaImage size={120} />, 
+      tagColor: '#60a8d3', 
+      icon: <PizzaImage size={100} />, // Medium pizza 
       title: '360\u00B0 Career Mentorship',
       subtitle: '', 
-      // Added (inc GST)
       price: <>₹ 749 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       saveBadge: 'Save 50%', 
 
-      borderColor: '#60a8d3', // Updated color
+      borderColor: '#60a8d3', 
       gradientFrom: 'rgba(96, 168, 211, 0.05)',
-      accentColor: '#60a8d3', // Updated color
+      accentColor: '#60a8d3', 
       description: 'This program helps students with a "Human Compass or a Sherpa" to decode complex data into an actionable strategy',
       features: [
         'All features of 360\u00B0 AI Career Assessment',
@@ -3030,17 +3029,16 @@ const PricingPage = ({ onNavigate }) => {
     },
     {
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 3,999 + GST</span>,
-      tagColor: '#b5833d', // Updated color
-      icon: <PizzaImage size={160} />, 
+      tagColor: '#b5833d', 
+      icon: <PizzaImage size={120} />, // Replaced 160 with 120 for the 3rd card
       title: '360\u00B0 Complete Career Discovery',
       subtitle: '',
-      // Added (inc GST)
       price: <>₹ 1,999 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
       saveBadge: 'Save 50%',
 
-      borderColor: '#b5833d', // Updated color
+      borderColor: '#b5833d', 
       gradientFrom: 'rgba(181, 131, 61, 0.06)',
-      accentColor: '#b5833d', // Updated color
+      accentColor: '#b5833d', 
       description: 'The premium tier offers the full "Lifelong Career Mentorship" ecosystem, connecting students with top-tier industry veterans to guide them',
       features: [
         'All features of 360\u00B0 AI Career Assessment',
@@ -3114,16 +3112,17 @@ const PricingPage = ({ onNavigate }) => {
                 <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                   
                   {/* Icon + Title */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px', marginTop: '12px', minHeight: '170px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px', marginTop: '12px', minHeight: '130px' }}>
                     <div style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0,
-                      width: '160px', 
+                      // Removed the fixed 160px width to eliminate the huge gap
                     }}>
                       {plan.icon}
                     </div>
                     <div>
-                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#0e2b3c', lineHeight: 1.2 }}>{plan.title}</h3>
+                      {/* Increased fontSize to 2rem and fontWeight to 800 so it matches the price text visual size */}
+                      <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: '#0e2b3c', lineHeight: 1.1 }}>{plan.title}</h3>
                       {plan.subtitle && <span style={{ color: '#4a7a96', fontSize: '0.85rem', display: 'block', marginTop: '6px' }}>{plan.subtitle}</span>}
                     </div>
                   </div>
@@ -3147,9 +3146,8 @@ const PricingPage = ({ onNavigate }) => {
                   {/* Description ("What you get:") */}
                   <div style={{
                     background: `${plan.accentColor}08`, borderRadius: '12px', padding: '16px', marginBottom: '20px',
-                    minHeight: '150px' // Tweak: Increased height a bit to hold larger text securely
+                    minHeight: '150px' 
                   }}>
-                    {/* Tweak: Increased fontSize from 0.95rem to 1.1rem */}
                     <p style={{ margin: 0, fontSize: '1.1rem', color: '#0e2b3c', lineHeight: 1.6, fontWeight: 500 }}>
                       {plan.description}
                     </p>
@@ -3175,7 +3173,7 @@ const PricingPage = ({ onNavigate }) => {
                       boxShadow: `0 4px 12px ${plan.accentColor}40`,
                       transition: 'all 0.2s ease', letterSpacing: '0.3px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                      marginTop: 'auto' // Keeps the button perfectly aligned at the bottom
+                      marginTop: 'auto' 
                     }}
                     onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 6px 16px ${plan.accentColor}50`; }}
                     onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 12px ${plan.accentColor}40`; }}

@@ -38,7 +38,7 @@ export function ProgramUpgrade({ user, onNavigate }) {
       subtitle: '',
       amount: 199,
       priceLabel: <>₹ 199 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
-      icon: <PizzaImage size={80} />,
+      icon: <PizzaImage size={80} />, // Smallest pizza
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 499 + GST</span>,
       tagColor: '#b5833d',
       saveBadge: 'Save 60%',
@@ -61,7 +61,7 @@ export function ProgramUpgrade({ user, onNavigate }) {
       subtitle: '',
       amount: 749,
       priceLabel: <>₹ 749 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
-      icon: <PizzaImage size={120} />,
+      icon: <PizzaImage size={100} />, // Medium pizza
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 1,499 + GST</span>,
       tagColor: '#60a8d3',
       saveBadge: 'Save 50%',
@@ -84,7 +84,7 @@ export function ProgramUpgrade({ user, onNavigate }) {
       subtitle: '',
       amount: 1999,
       priceLabel: <>₹ 1,999 <span style={{ fontSize: '1rem', color: '#4a7a96', fontWeight: 600, marginLeft: '4px' }}>(inc GST)</span></>,
-      icon: <PizzaImage size={160} />,
+      icon: <PizzaImage size={120} />, // Largest pizza (reduced from 160)
       tag: <span style={{ textDecoration: 'line-through' }}>₹ 3,999 + GST</span>,
       tagColor: '#b5833d',
       saveBadge: 'Save 50%',
@@ -238,26 +238,29 @@ export function ProgramUpgrade({ user, onNavigate }) {
               </div>
 
               <div className="card-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                
+                {/* Updated Icon & Title layout */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '20px',
+                  gap: '16px', // Reduced gap
                   marginBottom: '20px',
                   marginTop: '12px',
-                  minHeight: '170px'
+                  minHeight: '130px' // Adjusted min-height for better fit
                 }}>
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    flexShrink: 0,
-                    width: '160px',
+                    flexShrink: 0
+                    // Removed the 160px fixed width to kill the massive gap
                   }}>
                     {plan.icon}
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#0e2b3c', lineHeight: 1.2 }}>{plan.title}</h3>
-                    <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+                    {/* Increased title size and weight */}
+                    <h3 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: '#0e2b3c', lineHeight: 1.1 }}>{plan.title}</h3>
+                    <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)', display: 'block', marginTop: '6px' }}>
                       {plan.subtitle}
                     </span>
                   </div>
@@ -298,14 +301,14 @@ export function ProgramUpgrade({ user, onNavigate }) {
                   borderRadius: '12px',
                   padding: '16px',
                   marginBottom: '20px',
-                  minHeight: '150px' // Increased height
+                  minHeight: '150px' 
                 }}>
                   <p style={{
                     margin: 0,
-                    fontSize: '1.1rem', // Increased font size
+                    fontSize: '1.1rem',
                     color: '#0e2b3c',
                     lineHeight: 1.6,
-                    fontWeight: 500 // Increased font weight
+                    fontWeight: 500 
                   }}>
                     {plan.description}
                   </p>

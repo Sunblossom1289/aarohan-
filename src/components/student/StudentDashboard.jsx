@@ -80,7 +80,7 @@ export function StudentDashboard({ state, dispatch, onNavigate }) {
         {/* Box 1: Tests Completed */}
         <div className="stat-card" style={{ position: 'relative' }}>
           <div className="stat-value">{tests.filter(t => t.status === 'completed').length}/{tests.length}</div>
-          <div className="stat-label">Tests Completed</div>
+          <div className="stat-label">Test Sections Completed</div>
         </div>
 
         {/* Box 2: Mentorship Sessions */}
