@@ -1591,6 +1591,7 @@ const PerksSection = memo(({ shouldReduceAnimations }) => {
 
 // ✅ Program Flip Card Component 
 // ✅ Program Flip Card Component - recreated from flash.html design
+// ✅ Program Flip Card Component - recreated from flash.html design
 const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -1650,7 +1651,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               {card.title}
             </h3>
             <span style={{
-              backgroundColor: '#b5833d', /* ✅ CHANGED: Badge color */
+              backgroundColor: '#fcbb11', /* ✅ CHANGED: Grade Badge color */
               color: '#FFFFFF',
               fontSize: '13px',
               fontWeight: 700,
@@ -1658,7 +1659,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
               borderRadius: '50px',
               display: 'inline-block',
               textTransform: 'uppercase',
-              boxShadow: '0 2px 8px rgba(181, 131, 61, 0.3)' /* ✅ Tweaked shadow to match the brown */
+              boxShadow: '0 2px 8px rgba(252, 187, 17, 0.4)' /* ✅ Adjusted shadow to match the yellow */
             }}>
               {card.badge}
             </span>
@@ -1717,7 +1718,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
           padding: '35px 25px',
           boxSizing: 'border-box',
           border: '1px solid rgba(0,0,0,0.03)',
-          background: 'linear-gradient(180deg, #E7D7B0 0%, #FFFFFF 100%)', /* ✅ CONFIRMED: Back face gradient */
+          background: 'linear-gradient(180deg, #E7D7B0 0%, #FFFFFF 100%)', 
           transform: 'rotateY(180deg)'
         }}>
           <h4 style={{
@@ -1731,7 +1732,7 @@ const ProgramFlipCard = memo(({ card, onNavigate, shouldReduceAnimations }) => {
           </h4>
 
           <div style={{
-            backgroundColor: '#60a8d3', /* ✅ CHANGED: Objective box color */
+            backgroundColor: '#025782', /* ✅ CHANGED: Objective box color */
             color: '#FFFFFF',
             padding: '18px',
             borderRadius: '12px',
